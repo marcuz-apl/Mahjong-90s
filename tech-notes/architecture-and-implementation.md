@@ -159,6 +159,7 @@ To implement the "Electronic Base" (电子基盘) specific Seabed Win Chance int
   - **Win (Haidi Laoyue)**: If the player flips the winning tile, it is pushed to their hand, and `endGameRef.current` is triggered for Player 0 as a Tsumo win. This activates the neon CRT laser strobe victory overlay (`#haidiOverlay`) and plays the custom-synthesized "电光石火" (lightning fire) chiptune victory theme (combining low-frequency thunder rumbles, sawtooth lightning zaps, stochastic white-noise bandpass-filtered sparks, and square-wave arpeggios).
   - **Draw (流局)**: If a non-winning tile is chosen, the round ends in a standard draw.
 - **Yaku Scoring Integration**: Updated `calcHan` (inside `src/utils/mahjong.js`) to support the "海底撈月" Yaku (+1 Fan). If `isHaidi` is true, the Yaku is added to the victory points calculation and listed in the points breakdown on the final result overlay.
+- **Audio Demo Relocation**: The "海底捞月效果演示" (Haidi Laoyue audio showcase button) was moved from the start screen of the main game to the Admin Control Panel ("值班经理专区" / Settings Tab) to keep the player start screen cleaner and organize tools for managers/developers.
 
 ### Tile Back Color Customization Heuristics
 To let users customize the cosmetic theme of the game:

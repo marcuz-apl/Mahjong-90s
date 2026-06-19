@@ -3,6 +3,146 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+// Web Audio API Retro Arcade Synthesizer for Haidi Tsumo win (电光石火音效)
+const playHaidiSound = () => {
+  if (typeof window === 'undefined') return;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+  
+  const ctx = new AudioCtx();
+  const time = ctx.currentTime;
+  
+  // 1. Thunder Rumble (Triangle wave low-end)
+  const oscLow = ctx.createOscillator();
+  const gainLow = ctx.createGain();
+  oscLow.type = 'triangle';
+  oscLow.frequency.setValueAtTime(90, time);
+  oscLow.frequency.exponentialRampToValueAtTime(30, time + 1.5);
+  gainLow.gain.setValueAtTime(0.3, time);
+  gainLow.gain.exponentialRampToValueAtTime(0.001, time + 1.5);
+  oscLow.connect(gainLow);
+  gainLow.connect(ctx.destination);
+  oscLow.start(time);
+  oscLow.stop(time + 1.5);
+  
+  // 2. High-Voltage Lightning Zaps (Rapid pitch-dropping Sawtooths)
+  const playZap = (startTime, duration, startFreq, endFreq) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(startFreq, startTime);
+    osc.frequency.exponentialRampToValueAtTime(endFreq, startTime + duration);
+    gain.gain.setValueAtTime(0.18, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  };
+  
+  // Multiple rapid lightning strokes overlapping
+  playZap(time, 0.25, 2200, 100);
+  playZap(time + 0.1, 0.2, 1800, 80);
+  playZap(time + 0.2, 0.3, 2500, 60);
+  
+  // 3. Crackling Sparks (White noise generator)
+  const bufferSize = ctx.sampleRate * 1.5;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  
+  const playSpark = (sparkTime, sparkDuration, volume) => {
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = buffer;
+    
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1500 + Math.random() * 1500, sparkTime);
+    filter.Q.setValueAtTime(5, sparkTime);
+    
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(volume, sparkTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, sparkTime + sparkDuration);
+    
+    noiseSource.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    
+    noiseSource.start(sparkTime);
+    noiseSource.stop(sparkTime + sparkDuration);
+  };
+  
+  // Play a cluster of 15 rapid spark crackles during the first 0.6 seconds
+  for (let i = 0; i < 15; i++) {
+    const sparkOffset = i * 0.04 + Math.random() * 0.02;
+    playSpark(time + sparkOffset, 0.03 + Math.random() * 0.04, 0.12);
+  }
+  
+  // 4. Retro Victory Arpeggio Fanfare (Square waves, starting at 0.5s)
+  const playNote = (noteTime, freq, noteDuration) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(freq, noteTime);
+    gain.gain.setValueAtTime(0.06, noteTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, noteTime + noteDuration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(noteTime);
+    osc.stop(noteTime + noteDuration + 0.01);
+  };
+  
+  const notes = [
+    { freq: 523.25, dur: 0.15 }, // C5
+    { freq: 659.25, dur: 0.15 }, // E5
+    { freq: 783.99, dur: 0.15 }, // G5
+    { freq: 1046.50, dur: 0.25 }, // C6
+    { freq: 783.99, dur: 0.15 }, // G5
+    { freq: 1046.50, dur: 0.4 }  // C6
+  ];
+  
+  let currentOffset = 0.5; // Start notes at 0.5s
+  for (let i = 0; i < notes.length; i++) {
+    playNote(time + currentOffset, notes[i].freq, notes[i].dur);
+    currentOffset += notes[i].dur + 0.03;
+  }
+  
+  // 5. Final retro pitch-sliding chord (starts at 1.4s)
+  const chordStart = time + currentOffset;
+  const playChordNote = (freq) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(freq, chordStart);
+    osc.frequency.linearRampToValueAtTime(freq * 1.5, chordStart + 1.2);
+    gain.gain.setValueAtTime(0.05, chordStart);
+    gain.gain.exponentialRampToValueAtTime(0.001, chordStart + 1.2);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(chordStart);
+    osc.stop(chordStart + 1.3);
+  };
+  
+  playChordNote(523.25); // C5
+  playChordNote(659.25); // E5
+  playChordNote(783.99); // G5
+  playChordNote(1046.50); // C6
+  
+  // Top layer high peak beep
+  const oscArp = ctx.createOscillator();
+  const gainArp = ctx.createGain();
+  oscArp.type = 'sine';
+  oscArp.frequency.setValueAtTime(1567.98, chordStart); // G6
+  gainArp.gain.setValueAtTime(0.04, chordStart);
+  gainArp.gain.exponentialRampToValueAtTime(0.001, chordStart + 1.5);
+  oscArp.connect(gainArp);
+  gainArp.connect(ctx.destination);
+  oscArp.start(chordStart);
+  oscArp.stop(chordStart + 1.6);
+};
+
 export default function AdminPage() {
   const [mounted, setMounted] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
@@ -622,6 +762,21 @@ export default function AdminPage() {
                   <button type="submit" className="saveSettingsBtn">保存遊戲設置</button>
                 </div>
               </form>
+
+              {/* Sound Effect Test Section */}
+              <div className="settingsSection" style={{ marginTop: '30px' }}>
+                <h3 className="settingsSectionHeading">5. 遊戲特效與音效測試</h3>
+                <div style={{ padding: '15px 0' }}>
+                  <button 
+                    type="button" 
+                    className="saveSettingsBtn"
+                    style={{ background: 'linear-gradient(180deg, #ff2d75, #b01040)', borderColor: '#ff7da4', boxShadow: '0 0 10px rgba(255,45,117,0.4)', textShadow: '0 0 5px rgba(255,255,255,0.5)' }}
+                    onClick={playHaidiSound}
+                  >
+                    🌌 演示海底撈月效果 (音效)
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 

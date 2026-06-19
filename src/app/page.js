@@ -1087,15 +1087,7 @@ export default function GamePage() {
     setTimeout(() => f.remove(), 750);
   };
 
-  const triggerHaidiDemo = () => {
-    const demoTile = Math.floor(Math.random() * 34);
-    setHaidiTile(demoTile);
-    setHaidiOverlayActive(true);
-    playHaidiSound();
-    setTimeout(() => {
-      setHaidiOverlayActive(false);
-    }, 4500);
-  };
+
 
   const getWaitingTiles = (hand) => {
     const waiting = [];
@@ -1460,15 +1452,6 @@ export default function GamePage() {
             </button>
 
             {loginError && <div className="loginError">{loginError}</div>}
-            
-            <button 
-              type="button" 
-              className="startBtn demoHaidiBtn" 
-              onClick={triggerHaidiDemo}
-              style={{ width: '100%', marginTop: '15px' }}
-            >
-              🌌 演示海底撈月效果 (音效)
-            </button>
 
             <div className="adminEntranceLink">
               <Link href="/admin">⚙️ 值班經理專區</Link>
