@@ -16,6 +16,9 @@ import {
 export default function GamePage() {
   const [mounted, setMounted] = useState(false);
   const [difficulty, setDifficulty] = useState('normal');
+  const [username, setUsername] = useState('');
+  const [isGuest, setIsGuest] = useState(false);
+  const [loginError, setLoginError] = useState('');
 
   // --- React State for rendering ---
   const [score, setScore] = useState(10000);
@@ -99,39 +102,17 @@ export default function GamePage() {
     setWaitDisc(g._waitDisc);
   };
 
-  // --- User Initialization (Anonymous Sync with SQLite - data/mahjong-90s.db) ---
+  // --- Mount Initialization (Load settings & saved user) ---
   useEffect(() => {
     setMounted(true);
     const savedDiff = localStorage.getItem('street_mahjong_difficulty');
     if (savedDiff) {
       setDifficulty(savedDiff);
     }
-    async function initUser() {
-      let localId = localStorage.getItem('street_mahjong_user_id');
-      if (!localId) {
-        localId = typeof crypto.randomUUID === 'function' 
-          ? crypto.randomUUID() 
-          : Math.random().toString(36).substring(2) + Date.now().toString(36);
-        localStorage.setItem('street_mahjong_user_id', localId);
-      }
-      userIdRef.current = localId;
-
-      try {
-        const res = await fetch('/api/user', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: localId })
-        });
-        if (res.ok) {
-          const data = await res.json();
-          gameRef.current.score = data.user.chips;
-          setScore(data.user.chips);
-        }
-      } catch (err) {
-        console.error('Failed to sync user with database:', err);
-      }
+    const savedUser = localStorage.getItem('street_mahjong_user_id');
+    if (savedUser) {
+      setUsername(savedUser);
     }
-    initUser();
   }, []);
 
   // --- Preload and Clean local SVGs ---
