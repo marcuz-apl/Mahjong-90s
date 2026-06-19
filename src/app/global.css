@@ -587,14 +587,14 @@ next-route-announcer,
 
 /* Difficulty Selector Styles */
 .diffContainer {
-  margin: 10px 0 25px 0;
+  margin: 15px 0 30px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .diffLabel {
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.4);
   letter-spacing: 0.15em;
   font-weight: 700;
@@ -602,16 +602,16 @@ next-route-announcer,
 }
 .diffButtons {
   display: flex;
-  gap: 12px;
+  gap: 20px;
 }
 .diffBtn {
-  padding: 8px 18px;
-  font-size: 13px;
+  padding: 10px 22px;
+  font-size: 14px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.5);
   background: rgba(0, 0, 0, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
   font-family: inherit;
@@ -671,8 +671,8 @@ next-route-announcer,
 
 /* User Registration Overlay & Forms */
 .loginContainer {
-  width: 290px;
-  margin-top: 10px;
+  width: 340px;
+  margin-top: 15px;
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
@@ -682,12 +682,12 @@ next-route-announcer,
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 .loginInput {
   width: 100%;
-  padding: 11px 15px;
-  font-size: 15px;
+  padding: 13px 18px;
+  font-size: 16px;
   text-align: center;
   color: #fff;
   background: rgba(10, 2, 2, 0.7);
@@ -701,7 +701,7 @@ next-route-announcer,
 }
 .loginInput::placeholder {
   color: rgba(255, 255, 255, 0.35);
-  font-size: 13px;
+  font-size: 14px;
 }
 .loginInput:focus {
   border-color: var(--goldB);
@@ -709,7 +709,7 @@ next-route-announcer,
 }
 .startActions {
   display: flex;
-  gap: 14px;
+  gap: 20px;
   justify-content: space-between;
 }
 .startBtn {
