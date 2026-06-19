@@ -247,6 +247,8 @@ export default function GamePage() {
   const [haidiChanceCards, setHaidiChanceCards] = useState([]);
   const [flippedCardIdx, setFlippedCardIdx] = useState(-1);
   const [haidiChanceRevealed, setHaidiChanceRevealed] = useState(false);
+  const [tiankaiPeekActive, setTiankaiPeekActive] = useState(false);
+  const tiankaiTimerRef = useRef(null);
   const resolveHaidiChanceRef = useRef(null);
 
   // SVG Caching
@@ -301,7 +303,8 @@ export default function GamePage() {
     ai_chi_rate_hard: '0.8',
     ai_randomness_easy: '0.4',
     ai_randomness_normal: '0.15',
-    ai_randomness_hard: '0.0'
+    ai_randomness_hard: '0.0',
+    tiankai_peek_type: 'global'
   });
 
   // Synchronize async gameRef state to React states
@@ -360,6 +363,12 @@ export default function GamePage() {
       }
     };
     loadGlobalSettings();
+
+    return () => {
+      if (tiankaiTimerRef.current) {
+        clearTimeout(tiankaiTimerRef.current);
+      }
+    };
   }, []);
 
   // --- Preload and Clean local SVGs ---
@@ -997,6 +1006,25 @@ export default function GamePage() {
     initWall();
     deal();
     syncState();
+
+    // Clear any existing Tiankai timer
+    if (tiankaiTimerRef.current) {
+      clearTimeout(tiankaiTimerRef.current);
+      tiankaiTimerRef.current = null;
+    }
+    setTiankaiPeekActive(false);
+
+    if (g.gameMode === 'tiankai') {
+      const peekType = settingsRef.current.tiankai_peek_type || 'global';
+      if (peekType === 'limited') {
+        setTiankaiPeekActive(true);
+        tiankaiTimerRef.current = setTimeout(() => {
+          setTiankaiPeekActive(false);
+          tiankaiTimerRef.current = null;
+        }, 5000); // 5 seconds limited peek time
+      }
+    }
+
     if (g.gameMode === 'denshi') {
       playDenshiSound('dispatch');
     }
@@ -1245,6 +1273,13 @@ export default function GamePage() {
     g.running = false;
     g._waitDisc = false;
 
+    // Clear Tiankai timer
+    if (tiankaiTimerRef.current) {
+      clearTimeout(tiankaiTimerRef.current);
+      tiankaiTimerRef.current = null;
+    }
+    setTiankaiPeekActive(false);
+
     // Resolve pending async promises to terminate loops cleanly
     if (resolveDiscRef.current) {
       const resolve = resolveDiscRef.current;
@@ -1486,7 +1521,7 @@ export default function GamePage() {
             <span className="pL">對家 <span>({hands[2]?.length || 0})</span></span>
             <div style={{ display: 'flex', gap: '2px' }}>
               {hands[2]?.map((t, i) => (
-                gameMode === 'tiankai' ? (
+                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'global') === 'global') ? (
                   <div 
                     key={i} 
                     className="tile tF szN" 
@@ -1504,7 +1539,7 @@ export default function GamePage() {
             <div id="aLeft">
               <span className="pL">左家 <span>({hands[1]?.length || 0})</span></span>
               {hands[1]?.slice(0, 14).map((t, i) => (
-                gameMode === 'tiankai' ? (
+                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'global') === 'global') ? (
                   <div 
                     key={i} 
                     className="tile tF szN" 
@@ -1536,7 +1571,7 @@ export default function GamePage() {
             <div id="aRight">
               <span className="pL">右家 <span>({hands[3]?.length || 0})</span></span>
               {hands[3]?.slice(0, 14).map((t, i) => (
-                gameMode === 'tiankai' ? (
+                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'global') === 'global') ? (
                   <div 
                     key={i} 
                     className="tile tF szN" 

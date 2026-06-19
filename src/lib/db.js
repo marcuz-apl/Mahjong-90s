@@ -53,7 +53,8 @@ try {
     ai_chi_rate_hard: '0.8',
     ai_randomness_easy: '0.4',
     ai_randomness_normal: '0.15',
-    ai_randomness_hard: '0.0'
+    ai_randomness_hard: '0.0',
+    tiankai_peek_type: 'global'
   };
   const insertStmt = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)');
   for (const [k, v] of Object.entries(defaultSettings)) {
