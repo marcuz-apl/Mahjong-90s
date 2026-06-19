@@ -832,7 +832,7 @@ export default function GamePage() {
             <span className="pL">對家 <span>({hands[2]?.length || 0})</span></span>
             <div style={{ display: 'flex', gap: '2px' }}>
               {hands[2]?.map((_, i) => (
-                <div key={i} className="tile tB szV" />
+                <div key={i} className="tile tB szN" />
               ))}
             </div>
           </div>
@@ -842,7 +842,7 @@ export default function GamePage() {
             <div id="aLeft">
               <span className="pL">左家 <span>({hands[1]?.length || 0})</span></span>
               {hands[1]?.slice(0, 14).map((_, i) => (
-                <div key={i} className="tile tB szV" />
+                <div key={i} className="tile tB szN" />
               ))}
             </div>
 
@@ -868,7 +868,7 @@ export default function GamePage() {
             <div id="aRight">
               <span className="pL">右家 <span>({hands[3]?.length || 0})</span></span>
               {hands[3]?.slice(0, 14).map((_, i) => (
-                <div key={i} className="tile tB szV" />
+                <div key={i} className="tile tB szN" />
               ))}
             </div>
           </div>
