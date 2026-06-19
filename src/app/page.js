@@ -1090,13 +1090,12 @@ export default function GamePage() {
           <div className="crtVignette" />
           
           {/* Scattered Multilingual Texts */}
-          <span className="portalDecorText decorTC">街機麻雀遊戲廳</span>
           <span className="portalDecorText decorEN">Arcade Mahjong Arena</span>
           <span className="portalDecorText decorJA1">アーケード麻雀ゲームセンター</span>
           <span className="portalDecorText decorJA2">対戦脱衣麻雀ゲーム</span>
           
           <div className="portalHeader">
-            <h1 className="portalMainTitle">大滿貫</h1>
+            <h1 className="portalMainTitle">街機麻雀遊戲廳</h1>
             <div className="portalSubTitle">ARCADE MAHJONG</div>
           </div>
           
