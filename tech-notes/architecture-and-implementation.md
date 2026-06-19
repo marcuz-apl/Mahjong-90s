@@ -142,3 +142,9 @@ To save processing overhead and limit database sizes, we separated play paths:
 - **Registered Mode**: Standard forms take user handles (2-12 characters, checked on frontend/backend APIs). Hits server-side POST `/api/user` and `/api/game` endpoints to record chips and game logs.
 - **Guest Mode**: Guest players bypass server-side endpoints entirely. Progress is saved locally in the browser's `localStorage` (`street_mahjong_guest_chips`), removing database query load.
 
+### Discard Entrance Animation (Play Assist)
+To draw focus immediately to the newest discard:
+- Preserved standard chronological, player-by-player layouts in the central pool (`#dPool`).
+- Added a custom dual-animation sequence on the `.ld` class in `global.css` that triggers a one-time scaling and dropdown bounce transition (`discPopIn` using a cubic-bezier bezier curve) alongside the infinite glowing pulse effect.
+
+
