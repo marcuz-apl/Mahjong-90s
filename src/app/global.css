@@ -763,5 +763,29 @@ next-route-announcer,
   line-height: 1.4;
 }
 
+/* Quit Button Style */
+.quitBtn {
+  background: linear-gradient(180deg, var(--red), #801020);
+  border: 1px solid var(--red);
+  border-radius: 4px;
+  padding: 3px 10px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease-in-out;
+  font-family: inherit;
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 8px rgba(196, 30, 58, 0.4);
+}
+.quitBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px var(--red);
+}
+.quitBtn:active {
+  transform: scale(0.95);
+}
+
+
 
 

@@ -1,6 +1,6 @@
 {
   "name": "street-machine-mahjong",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,5 +16,5 @@
     "react-dom": "^19.0.0",
     "uuid": "^9.0.1"
   },
-  "buildTime": "build 2026-06-19-1243"
+  "buildTime": "build 2026-06-19-1244"
 }
