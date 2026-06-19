@@ -552,3 +552,81 @@ next-route-announcer,
   visibility: hidden !important;
 }
 
+/* Difficulty Selector Styles */
+.diffContainer {
+  margin: 10px 0 25px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.diffLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  text-shadow: 0 0 5px rgba(255,255,255,0.1);
+}
+.diffButtons {
+  display: flex;
+  gap: 12px;
+}
+.diffBtn {
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  font-family: inherit;
+  letter-spacing: 0.08em;
+}
+.diffBtn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.55);
+  transform: translateY(-1px);
+}
+.diffBtn.active {
+  color: #fff;
+  font-weight: 900;
+  transform: translateY(-2px);
+}
+.diffBtn.dfEasy.active {
+  border-color: var(--neonG);
+  box-shadow: 0 0 12px var(--neonG);
+  text-shadow: 0 0 6px var(--neonG);
+}
+.diffBtn.dfNormal.active {
+  border-color: var(--goldB);
+  box-shadow: 0 0 12px var(--gold);
+  text-shadow: 0 0 6px var(--goldB);
+}
+.diffBtn.dfHard.active {
+  border-color: var(--neonP);
+  box-shadow: 0 0 12px var(--neonP);
+  text-shadow: 0 0 6px var(--neonP);
+}
+
+/* topBar Difficulty Indicator */
+.bDiff {
+  font-weight: 900;
+  padding: 1px 4px;
+  font-size: 11px;
+}
+.bDiff.easy {
+  color: var(--neonG);
+  text-shadow: 0 0 8px var(--neonG);
+}
+.bDiff.normal {
+  color: var(--goldB);
+  text-shadow: 0 0 8px var(--gold);
+}
+.bDiff.hard {
+  color: var(--neonP);
+  text-shadow: 0 0 8px var(--neonP);
+}
+
+

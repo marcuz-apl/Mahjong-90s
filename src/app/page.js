@@ -15,6 +15,7 @@ import {
 
 export default function GamePage() {
   const [mounted, setMounted] = useState(false);
+  const [difficulty, setDifficulty] = useState('normal');
 
   // --- React State for rendering ---
   const [score, setScore] = useState(10000);
@@ -64,7 +65,8 @@ export default function GamePage() {
     lastDiscP: -1,
     newTileIdx: -1,
     selIdx: -1,
-    _waitDisc: false
+    _waitDisc: false,
+    difficulty: 'normal'
   });
 
   const userIdRef = useRef('');
@@ -100,6 +102,10 @@ export default function GamePage() {
   // --- User Initialization (Anonymous Sync with SQLite - data/mahjong-90s.db) ---
   useEffect(() => {
     setMounted(true);
+    const savedDiff = localStorage.getItem('street_mahjong_difficulty');
+    if (savedDiff) {
+      setDifficulty(savedDiff);
+    }
     async function initUser() {
       let localId = localStorage.getItem('street_mahjong_user_id');
       if (!localId) {
@@ -333,6 +339,15 @@ export default function GamePage() {
   const aiPick = (p) => {
     const hand = gameRef.current.hands[p];
     if (hand.length === 0) return 0;
+    
+    const diff = gameRef.current.difficulty || 'normal';
+    if (diff === 'easy' && Math.random() < 0.40) {
+      return Math.floor(Math.random() * hand.length);
+    }
+    if (diff === 'normal' && Math.random() < 0.15) {
+      return Math.floor(Math.random() * hand.length);
+    }
+
     const c = new Array(34).fill(0);
     for (let i = 0; i < hand.length; i++) c[hand[i]]++;
     let worst = 0;
@@ -361,7 +376,17 @@ export default function GamePage() {
     for (let i = 0; i < gameRef.current.hands[p].length; i++) {
       if (gameRef.current.hands[p][i] === tile) c++;
     }
-    return c >= 3 ? true : Math.random() > 0.3;
+    if (c >= 3) return true;
+
+    const diff = gameRef.current.difficulty || 'normal';
+    const roll = Math.random();
+    if (diff === 'easy') {
+      return roll < 0.10;
+    } else if (diff === 'normal') {
+      return roll < 0.30;
+    } else {
+      return roll < 0.50;
+    }
   };
 
   // --- Assign Ref callbacks to handle async game loop flows ---
@@ -606,7 +631,12 @@ export default function GamePage() {
           return { player: 0, skipDraw: true };
         }
       } else {
-        if (Math.random() > 0.5) {
+        const diff = gameRef.current.difficulty || 'normal';
+        let chiThreshold = 0.5; // Normal: 50%
+        if (diff === 'easy') chiThreshold = 0.8; // Easy: 20%
+        if (diff === 'hard') chiThreshold = 0.2; // Hard: 80%
+
+        if (Math.random() > chiThreshold) {
           const fromH = chiOpts[0].filter(t => t !== tile);
           doChi(nextP, tile, fromH);
           syncState();
@@ -763,8 +793,14 @@ export default function GamePage() {
     setTimeout(() => f.remove(), 750);
   };
 
+  const handleDifficultyChange = (level) => {
+    setDifficulty(level);
+    localStorage.setItem('street_mahjong_difficulty', level);
+  };
+
   const handleCoinBtnClick = async () => {
     setCoinBtnDisabled(true);
+    gameRef.current.difficulty = difficulty;
     const loaded = await preloadAssets();
     setShowStartScreen(false);
     startGame();
@@ -808,6 +844,31 @@ export default function GamePage() {
           <div className="titleMain">大滿貫</div>
           <div className="titleSub">ARCADE MAHJONG</div>
           <div className="decoLine"></div>
+          
+          <div className="diffContainer">
+            <span className="diffLabel">選擇難度 / DIFFICULTY</span>
+            <div className="diffButtons">
+              <button 
+                className={`diffBtn dfEasy ${difficulty === 'easy' ? 'active' : ''}`}
+                onClick={() => handleDifficultyChange('easy')}
+              >
+                簡單 EASY
+              </button>
+              <button 
+                className={`diffBtn dfNormal ${difficulty === 'normal' ? 'active' : ''}`}
+                onClick={() => handleDifficultyChange('normal')}
+              >
+                普通 NORMAL
+              </button>
+              <button 
+                className={`diffBtn dfHard ${difficulty === 'hard' ? 'active' : ''}`}
+                onClick={() => handleDifficultyChange('hard')}
+              >
+                困難 HARD
+              </button>
+            </div>
+          </div>
+
           <button 
             className="coinBtn" 
             id="coinBtn" 
@@ -828,6 +889,9 @@ export default function GamePage() {
         <div id="topBar">
           <span className="bI">籌碼 <span className="bS" id="elS">{score}</span></span>
           <span className="bI bR" id="elR">第 {round} 局</span>
+          <span className="bI">難度: <span className={`bDiff ${difficulty}`} id="elDiff">
+            {difficulty === 'easy' ? '簡單' : difficulty === 'hard' ? '困難' : '普通'}
+          </span></span>
           <span className="bI" id="elRm">殘 {wallCount}</span>
         </div>
         
