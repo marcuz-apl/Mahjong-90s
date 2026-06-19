@@ -1687,77 +1687,58 @@ next-route-announcer,
 }
 
 /* Cabinet/Portal Cards */
+/* 3D Swinging Portal Doors */
 .portalCabinet {
   flex: 1;
-  max-width: 320px;
-  aspect-ratio: 3 / 4;
-  background: rgba(15, 3, 3, 0.85);
-  border: 4px solid var(--gold);
+  max-width: 240px;
+  height: 460px;
+  perspective: 1200px;
+  cursor: pointer;
+  position: relative;
+}
+
+.doorPanel {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  border: 5px solid;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 30px 20px;
-  cursor: pointer;
+  padding: 35px 15px;
   position: relative;
-  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 0 20px rgba(212, 168, 67, 0.3);
-  overflow: hidden;
+  transition: transform 0.45s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.3s;
+  box-sizing: border-box;
 }
 
-.portalCabinet::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 50%, rgba(212, 168, 67, 0.1) 100%);
-  pointer-events: none;
-}
-
-/* Left Entrance ("电子基盘") specifically */
-.portalCabinet.denshiCab {
+/* 3D Hinges & Glows */
+.denshiCab .doorPanel {
+  background-image: url('/denshi_bg.png');
   border-color: var(--goldB);
-  box-shadow: 0 0 25px rgba(245, 214, 128, 0.3);
+  box-shadow: 0 0 20px rgba(245, 214, 128, 0.35);
+  transform-origin: left center;
 }
 
-.portalCabinet.denshiCab:hover {
-  transform: translateY(-8px) scale(1.04);
+.denshiCab:hover .doorPanel {
+  transform: rotateY(35deg);
   border-color: #fff;
-  box-shadow: 0 0 40px var(--goldB), inset 0 0 15px rgba(245, 214, 128, 0.2);
+  box-shadow: 0 0 45px var(--goldB), inset 0 0 20px rgba(245, 214, 128, 0.2);
 }
 
-/* Right Entrance ("天开眼") specifically */
-.portalCabinet.tiankaiCab {
+.tiankaiCab .doorPanel {
+  background-image: url('/tiankai_bg.png');
   border-color: var(--neonP);
-  box-shadow: 0 0 25px rgba(255, 45, 117, 0.3);
+  box-shadow: 0 0 20px rgba(255, 45, 117, 0.35);
+  transform-origin: right center;
 }
 
-.portalCabinet.tiankaiCab:hover {
-  transform: translateY(-8px) scale(1.04);
+.tiankaiCab:hover .doorPanel {
+  transform: rotateY(-35deg);
   border-color: #fff;
-  box-shadow: 0 0 40px var(--neonP), inset 0 0 15px rgba(255, 45, 117, 0.2);
-}
-
-/* Cabinet Inner Elements */
-.cabScreen {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: #0d0202;
-  border: 3px solid #331515;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: inset 0 0 15px #000;
-}
-
-.denshiCab .cabScreen {
-  border-color: #4a2e0a;
-}
-.tiankaiCab .cabScreen {
-  border-color: #4a0d24;
+  box-shadow: 0 0 45px var(--neonP), inset 0 0 20px rgba(255, 45, 117, 0.2);
 }
 
 .cabScreenGlow {
@@ -1766,6 +1747,8 @@ next-route-announcer,
   background: radial-gradient(circle, rgba(212, 168, 67, 0.1) 0%, transparent 80%);
   pointer-events: none;
   animation: screenPulse 3s infinite alternate;
+  border-radius: 8px;
+  z-index: 1;
 }
 .tiankaiCab .cabScreenGlow {
   background: radial-gradient(circle, rgba(255, 45, 117, 0.15) 0%, transparent 80%);
@@ -1776,60 +1759,72 @@ next-route-announcer,
   100% { opacity: 1; }
 }
 
-.cabTitle {
-  font-size: clamp(20px, 4vw, 34px);
-  font-weight: 900;
-  color: #fff;
-  letter-spacing: 0.1em;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-  z-index: 2;
-  text-align: center;
-}
-
-.denshiCab .cabTitle {
-  color: var(--goldB);
-  text-shadow: 0 0 10px var(--gold);
-}
-
-.tiankaiCab .cabTitle {
-  color: var(--neonP);
-  text-shadow: 0 0 10px var(--neonP);
-}
-
-.cabDesc {
-  font-size: 13px;
-  color: #bbb;
-  text-align: center;
-  line-height: 1.6;
-  letter-spacing: 0.05em;
-}
-
-.cabCoinSlot {
-  width: 70px;
-  height: 20px;
-  background: #222;
-  border: 2px solid #444;
+/* Door Handles / Doorknobs */
+.doorHandle {
+  width: 14px;
+  height: 50px;
+  background: linear-gradient(90deg, #ecc040, #c49020);
+  border: 1px solid var(--goldB);
   border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5), 0 0 10px rgba(212, 168, 67, 0.4);
+  z-index: 10;
 }
 
-.cabCoinSlot::after {
-  content: '';
-  width: 4px;
-  height: 12px;
-  background: #ff5500;
-  box-shadow: 0 0 8px #ff5500;
-  border-radius: 1px;
+.denshiCab .doorHandle {
+  right: 15px; /* Opening edge on the right */
 }
 
-.denshiCab .cabCoinSlot {
+.tiankaiCab .doorHandle {
+  left: 15px; /* Opening edge on the left */
+  background: linear-gradient(90deg, #ff7da4, #ff2d75);
+  border-color: #ffb3cc;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5), 0 0 10px rgba(255, 45, 117, 0.4);
+}
+
+/* Door Signboards */
+.doorSign {
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid;
+  border-radius: 6px;
+  z-index: 5;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+  white-space: nowrap;
+}
+
+.denshiCab .doorSign {
+  color: var(--goldB);
   border-color: var(--gold);
+  text-shadow: 0 0 10px var(--gold);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.6), 0 0 15px rgba(212, 168, 67, 0.3);
 }
-.tiankaiCab .cabCoinSlot {
+
+.tiankaiCab .doorSign {
+  color: var(--neonP);
   border-color: var(--neonP);
+  text-shadow: 0 0 10px var(--neonP);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.6), 0 0 15px rgba(255, 45, 117, 0.3);
+}
+
+/* Door Description */
+.doorDesc {
+  font-size: 13px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-align: center;
+  line-height: 1.5;
+  z-index: 5;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .portalFooter {

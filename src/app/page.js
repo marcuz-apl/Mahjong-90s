@@ -1101,7 +1101,7 @@ export default function GamePage() {
           </div>
           
           <div className="portalEntranceContainer">
-            {/* Left Cabinet: Denshi Kiban */}
+            {/* Left Door: Denshi Kiban */}
             <div 
               className="portalCabinet denshiCab"
               onClick={() => {
@@ -1109,23 +1109,13 @@ export default function GamePage() {
                 setScreenState('start');
               }}
             >
-              <div className="cabTitle">電子基盤</div>
-              <div className="cabScreen">
+              <div className="doorPanel">
                 <div className="cabScreenGlow" />
-                <img 
-                  src="/denshi_bg.png" 
-                  alt="電子基盤" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                />
+                <div className="doorHandle" />
               </div>
-              <div className="cabDesc">
-                經典街機麻將規則<br />
-                考驗您的真實牌技！
-              </div>
-              <div className="cabCoinSlot" />
             </div>
             
-            {/* Right Cabinet: Tian Kai Yan */}
+            {/* Right Door: Tian Kai Yan */}
             <div 
               className="portalCabinet tiankaiCab"
               onClick={() => {
@@ -1133,20 +1123,10 @@ export default function GamePage() {
                 setScreenState('start');
               }}
             >
-              <div className="cabTitle">天開眼</div>
-              <div className="cabScreen">
+              <div className="doorPanel">
                 <div className="cabScreenGlow" />
-                <img 
-                  src="/tiankai_bg.png" 
-                  alt="天開眼" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                />
+                <div className="doorHandle" />
               </div>
-              <div className="cabDesc">
-                透視模式天開眼<br />
-                電腦手牌一目了然！
-              </div>
-              <div className="cabCoinSlot" />
             </div>
           </div>
           
