@@ -15,67 +15,109 @@ import {
 } from '@/utils/mahjong';
 
 // Web Audio API Retro Arcade Synthesizer for Haidi Tsumo win
+// Web Audio API Retro Arcade Synthesizer for Haidi Tsumo win (电光石火音效)
 const playHaidiSound = () => {
   if (typeof window === 'undefined') return;
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   if (!AudioCtx) return;
   
   const ctx = new AudioCtx();
+  const time = ctx.currentTime;
   
-  // 1. Rising Retro Laser Siren
-  const osc1 = ctx.createOscillator();
-  const gain1 = ctx.createGain();
-  osc1.type = 'sawtooth';
-  osc1.frequency.setValueAtTime(100, ctx.currentTime);
-  osc1.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 1.2);
-  gain1.gain.setValueAtTime(0.12, ctx.currentTime);
-  gain1.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 1.2);
-  osc1.connect(gain1);
-  gain1.connect(ctx.destination);
-  osc1.start();
-  osc1.stop(ctx.currentTime + 1.2);
+  // 1. Thunder Rumble (Triangle wave low-end)
+  const oscLow = ctx.createOscillator();
+  const gainLow = ctx.createGain();
+  oscLow.type = 'triangle';
+  oscLow.frequency.setValueAtTime(90, time);
+  oscLow.frequency.exponentialRampToValueAtTime(30, time + 1.5);
+  gainLow.gain.setValueAtTime(0.3, time);
+  gainLow.gain.exponentialRampToValueAtTime(0.001, time + 1.5);
+  oscLow.connect(gainLow);
+  gainLow.connect(ctx.destination);
+  oscLow.start(time);
+  oscLow.stop(time + 1.5);
   
-  // 2. Metallic Ringing Strobe Beeps
-  const playBeep = (time, freq, dur) => {
+  // 2. High-Voltage Lightning Zaps (Rapid pitch-dropping Sawtooths)
+  const playZap = (startTime, duration, startFreq, endFreq) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(startFreq, startTime);
+    osc.frequency.exponentialRampToValueAtTime(endFreq, startTime + duration);
+    gain.gain.setValueAtTime(0.18, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  };
+  
+  // Multiple rapid lightning strokes overlapping
+  playZap(time, 0.25, 2200, 100);
+  playZap(time + 0.1, 0.2, 1800, 80);
+  playZap(time + 0.2, 0.3, 2500, 60);
+  
+  // 3. Crackling Sparks (White noise generator)
+  const bufferSize = ctx.sampleRate * 1.5;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  
+  const playSpark = (sparkTime, sparkDuration, volume) => {
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = buffer;
+    
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1500 + Math.random() * 1500, sparkTime);
+    filter.Q.setValueAtTime(5, sparkTime);
+    
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(volume, sparkTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, sparkTime + sparkDuration);
+    
+    noiseSource.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    
+    noiseSource.start(sparkTime);
+    noiseSource.stop(sparkTime + sparkDuration);
+  };
+  
+  // Play a cluster of 15 rapid spark crackles during the first 0.6 seconds
+  for (let i = 0; i < 15; i++) {
+    const sparkOffset = i * 0.04 + Math.random() * 0.02;
+    playSpark(time + sparkOffset, 0.03 + Math.random() * 0.04, 0.12);
+  }
+  
+  // 4. Retro Victory Arpeggio Fanfare (Square waves, starting at 0.5s)
+  const playNote = (noteTime, freq, noteDuration) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'square';
-    osc.frequency.setValueAtTime(freq, time);
-    gain.gain.setValueAtTime(0.1, time);
-    gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+    osc.frequency.setValueAtTime(freq, noteTime);
+    gain.gain.setValueAtTime(0, noteTime);
+    gain.gain.linearRampToValueAtTime(0.12, noteTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, noteTime + noteDuration);
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.start(time);
-    osc.stop(time + dur);
+    osc.start(noteTime);
+    osc.stop(noteTime + noteDuration);
   };
   
-  // Play a sequence of rapid ringing alarm beeps during the sweep
-  for (let i = 0; i < 8; i++) {
-    playBeep(ctx.currentTime + i * 0.15, 880 + (i % 2 === 0 ? 100 : -100), 0.12);
-  }
+  const fanfareStart = time + 0.5;
+  const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50, 1318.51]; // C5, E5, G5, C6, G5, C6, E6
+  notes.forEach((freq, index) => {
+    playNote(fanfareStart + index * 0.12, freq, 0.18);
+  });
   
-  // 3. Victory Fanfare Synth Chords (starts after siren, at 1.2s)
-  const playSynthChord = (time, freqs, duration) => {
-    freqs.forEach(freq => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, time);
-      gain.gain.setValueAtTime(0, time);
-      gain.gain.linearRampToValueAtTime(0.08, time + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(time);
-      osc.stop(time + duration);
-    });
-  };
-  
-  const startTime = ctx.currentTime + 1.2;
-  playSynthChord(startTime, [261.63, 329.63, 392.00, 523.25], 0.6);
-  playSynthChord(startTime + 0.6, [349.23, 440.00, 523.25, 698.46], 0.6);
-  playSynthChord(startTime + 1.2, [392.00, 493.88, 587.33, 783.99], 0.6);
-  playSynthChord(startTime + 1.8, [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50], 1.8);
+  // Play grand finale chord (E6, G6, C7)
+  const chordStart = fanfareStart + notes.length * 0.12;
+  playNote(chordStart, 1318.51, 1.5); // E6
+  playNote(chordStart, 1567.98, 1.5); // G6
+  playNote(chordStart, 2093.00, 1.5); // C7
 };
 
 // Web Audio API Retro Arcade sound effects for Denshi Kiban (Electronic Base) mode
