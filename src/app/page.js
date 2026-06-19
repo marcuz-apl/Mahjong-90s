@@ -728,6 +728,10 @@ export default function GamePage() {
       }
 
       const k = e.key.toUpperCase();
+      if (k === 'Q' && g.running) {
+        e.preventDefault();
+        handleQuitClick();
+      }
       if (k === 'H') triggerClickAB('abW');
       if (k === 'P') triggerClickAB('abP');
       if (k === 'K') triggerClickAB('abK');
@@ -1085,7 +1089,7 @@ export default function GamePage() {
               })}
             </div>
 
-            <div id="keyH">←→ 選牌 | Enter 出牌 | H 胡 | P 碰 | K 槓 | C 吃 | 空格 跳過</div>
+            <div id="keyH">←→ 選牌 | Enter 出牌 | H 胡 | P 碰 | K 槓 | C 吃 | 空格 跳過 | Q 退出</div>
           </div>
         </div>
 
