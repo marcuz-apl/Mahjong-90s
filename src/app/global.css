@@ -67,7 +67,7 @@ html,body{
 .decoLine{
   width:240px;
   height:2px;
-  margin:30px 0;
+  margin:30px 0 50px 0;
   background:linear-gradient(90deg,transparent,var(--gold),transparent);
 }
 @keyframes tPulse{
