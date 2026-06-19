@@ -119,9 +119,13 @@ export function canWinWith(hand, extra) {
   return canWinRaw(h);
 }
 
-export function calcHan(hand, melds, isTsumo) {
+export function calcHan(hand, melds, isTsumo, isHaidi) {
   let han = 0;
   const yaku = [];
+  if (isHaidi) {
+    han += 1;
+    yaku.push('海底撈月');
+  }
   const c = new Array(34).fill(0);
   for (let i = 0; i < hand.length; i++) c[hand[i]]++;
   

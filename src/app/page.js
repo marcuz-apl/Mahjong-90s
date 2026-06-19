@@ -187,6 +187,19 @@ const playDenshiSound = (type, customCount = 0) => {
     gain.connect(ctx.destination);
     osc.start(time);
     osc.stop(time + 0.09);
+  } else if (type === 'card_flip') {
+    const time = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(300, time);
+    osc.frequency.exponentialRampToValueAtTime(1200, time + 0.15);
+    gain.gain.setValueAtTime(0.12, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(time);
+    osc.stop(time + 0.16);
   }
 };
 
@@ -229,6 +242,11 @@ export default function GamePage() {
 
   const [haidiOverlayActive, setHaidiOverlayActive] = useState(false);
   const [haidiTile, setHaidiTile] = useState(null);
+  const [haidiChanceActive, setHaidiChanceActive] = useState(false);
+  const [haidiChanceCards, setHaidiChanceCards] = useState([]);
+  const [flippedCardIdx, setFlippedCardIdx] = useState(-1);
+  const [haidiChanceRevealed, setHaidiChanceRevealed] = useState(false);
+  const resolveHaidiChanceRef = useRef(null);
 
   // SVG Caching
   const [svgCache, setSvgCache] = useState({});
@@ -669,7 +687,7 @@ export default function GamePage() {
 
     const hand = g.hands[winner];
     const melds = g.melds[winner];
-    const res = calcHan(hand, melds, isTsumo);
+    const res = calcHan(hand, melds, isTsumo, isHaidi);
     const base = Math.pow(2, res.han + 2) * 100;
     const pts = Math.min(base, 32000);
 
@@ -902,6 +920,20 @@ export default function GamePage() {
 
     while (g.running) {
       if (g.wall.length === 0 && !skipDraw) {
+        if (g.gameMode === 'denshi') {
+          const waiting = getWaitingTiles(g.hands[0]);
+          if (waiting.length > 0) {
+            const winTile = await startHaidiChance(waiting);
+            if (winTile !== null) {
+              g.hands[0].push(winTile);
+              sortH(0);
+              await endGameRef.current(0, winTile, true);
+            } else {
+              await endGameRef.current(-1, null, false);
+            }
+            return;
+          }
+        }
         await endGameRef.current(-1, null, false);
         return;
       }
@@ -1058,6 +1090,69 @@ export default function GamePage() {
     setTimeout(() => {
       setHaidiOverlayActive(false);
     }, 4500);
+  };
+
+  const getWaitingTiles = (hand) => {
+    const waiting = [];
+    for (let t = 0; t < 34; t++) {
+      if (canWinWith(hand, t)) {
+        waiting.push(t);
+      }
+    }
+    return waiting;
+  };
+
+  const startHaidiChance = (waiting) => {
+    return new Promise((resolve) => {
+      const winningTile = waiting[Math.floor(Math.random() * waiting.length)];
+      
+      const nonWaiting = [];
+      for (let t = 0; t < 34; t++) {
+        if (!waiting.includes(t)) {
+          nonWaiting.push(t);
+        }
+      }
+      
+      const n1 = nonWaiting[Math.floor(Math.random() * nonWaiting.length)];
+      const remainingNon = nonWaiting.filter(t => t !== n1);
+      const n2 = remainingNon[Math.floor(Math.random() * remainingNon.length)];
+      
+      const cards = [
+        { tile: winningTile, isWin: true },
+        { tile: n1, isWin: false },
+        { tile: n2, isWin: false }
+      ];
+      
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+      
+      setHaidiChanceCards(cards);
+      setFlippedCardIdx(-1);
+      setHaidiChanceRevealed(false);
+      setHaidiChanceActive(true);
+      
+      resolveHaidiChanceRef.current = resolve;
+    });
+  };
+
+  const handleHaidiCardClick = async (idx) => {
+    if (flippedCardIdx !== -1) return;
+    setFlippedCardIdx(idx);
+    playDenshiSound('card_flip');
+    
+    const card = haidiChanceCards[idx];
+    
+    await delay(800);
+    setHaidiChanceRevealed(true);
+    
+    await delay(1800);
+    setHaidiChanceActive(false);
+    
+    if (resolveHaidiChanceRef.current) {
+      resolveHaidiChanceRef.current(card.isWin ? card.tile : null);
+    }
   };
 
   const handleDifficultyChange = (level) => {
@@ -1549,6 +1644,60 @@ export default function GamePage() {
               dangerouslySetInnerHTML={{ __html: svgCache[haidiTile] || '' }}
               style={{ width: '90px', height: '120px' }}
             />
+          </div>
+        </div>
+      )}
+
+      {/* HAIDI CHANCE OVERLAY */}
+      {haidiChanceActive && (
+        <div id="haidiChanceOverlay">
+          <div className="crtScanlines" />
+          <div className="crtVignette" />
+          <div className="haidiChanceTitle">海底機會</div>
+          <div className="haidiChanceSub">聽牌玩家專屬！選擇一枚海底牌，拼出海底撈月！</div>
+          
+          <div className="haidiChanceBox">
+            {haidiChanceCards.map((card, idx) => {
+              const isFlipped = idx === flippedCardIdx || haidiChanceRevealed;
+              const isChosen = idx === flippedCardIdx;
+              let cardClass = "haidiChanceCard";
+              if (isFlipped) cardClass += " flipped";
+              if (isChosen) {
+                cardClass += card.isWin ? " chosen-win" : " chosen-lose";
+              } else if (flippedCardIdx !== -1) {
+                cardClass += " dimmed";
+              }
+              
+              return (
+                <div 
+                  key={idx} 
+                  className="haidiChanceCardWrapper"
+                  onClick={() => handleHaidiCardClick(idx)}
+                >
+                  <div className={cardClass}>
+                    {/* Card Front (Face-down Mahjong Backing) */}
+                    <div className="haidiChanceCardFront">
+                      <div className="tileBackDesign">
+                        <div className="tileBackLogo">🀄</div>
+                        <div className="tileBackText">電子基盤</div>
+                      </div>
+                    </div>
+                    
+                    {/* Card Back (Face-up Mahjong Tile Face) */}
+                    <div className="haidiChanceCardBack">
+                      <div 
+                        className="tile tF szN"
+                        dangerouslySetInnerHTML={{ __html: svgCache[card.tile] || '' }}
+                        style={{ width: '80px', height: '110px' }}
+                      />
+                      {card.isWin && (
+                        <div className="winBadge">獲勝牌</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
