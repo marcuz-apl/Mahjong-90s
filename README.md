@@ -66,6 +66,11 @@ Make sure you have Node.js (v18+) and npm installed.
 
 ---
 
+## 👏 Credits
+- Mahjong Tile Vectors files: https://github.com/lietxia/mahjong_graphic
+
+---
+
 ## 📄 License
 This project is licensed under the **Apache License 2.0**.
 
