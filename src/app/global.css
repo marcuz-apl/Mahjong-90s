@@ -67,7 +67,7 @@ html,body{
 .decoLine{
   width:240px;
   height:2px;
-  margin:30px 0 50px 0;
+  margin:40px 0 120px 0;
   background:linear-gradient(90deg,transparent,var(--gold),transparent);
 }
 @keyframes tPulse{
@@ -587,7 +587,7 @@ next-route-announcer,
 
 /* Difficulty Selector Styles */
 .diffContainer {
-  margin: 15px 0 30px 0;
+  margin: 50px 0 30px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
