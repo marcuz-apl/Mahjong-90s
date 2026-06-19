@@ -585,8 +585,7 @@ export default function GamePage() {
     g._waitDisc = false;
     syncState();
 
-    // Temporarily disabled Denshi Kiban Seabed Win effect
-    /*
+    // Re-enabled Denshi Kiban Seabed Win (海底撈月) visual and chiptune sound effect
     const isHaidi = winner === 0 && isTsumo && g.wall.length === 0;
     if (isHaidi) {
       setHaidiTile(winTile);
@@ -595,7 +594,6 @@ export default function GamePage() {
       await delay(4500);
       setHaidiOverlayActive(false);
     }
-    */
 
     if (winner === -1) {
       showMsg('流局');
@@ -1292,6 +1290,15 @@ export default function GamePage() {
 
             {loginError && <div className="loginError">{loginError}</div>}
             
+            <button 
+              type="button" 
+              className="startBtn demoHaidiBtn" 
+              onClick={triggerHaidiDemo}
+              style={{ width: '100%', marginTop: '15px' }}
+            >
+              🌌 演示海底撈月效果 (音效)
+            </button>
+
             <div className="adminEntranceLink">
               <Link href="/admin">⚙️ 值班經理專區</Link>
             </div>
