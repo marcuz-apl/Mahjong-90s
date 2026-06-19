@@ -133,7 +133,13 @@ export default function GamePage() {
     }
     const savedUser = localStorage.getItem('street_mahjong_user_id');
     if (savedUser) {
-      setUsername(savedUser);
+      const trimmed = savedUser.trim();
+      const usernameRegex = /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/;
+      if (trimmed.length >= 2 && trimmed.length <= 12 && usernameRegex.test(trimmed)) {
+        setUsername(trimmed);
+      } else {
+        localStorage.removeItem('street_mahjong_user_id');
+      }
     }
 
     const loadGlobalSettings = async () => {
