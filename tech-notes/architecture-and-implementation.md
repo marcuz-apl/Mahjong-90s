@@ -160,6 +160,16 @@ To implement the "Electronic Base" (电子基盘) specific Seabed Win Chance int
   - **Draw (流局)**: If a non-winning tile is chosen, the round ends in a standard draw.
 - **Yaku Scoring Integration**: Updated `calcHan` (inside `src/utils/mahjong.js`) to support the "海底撈月" Yaku (+1 Fan). If `isHaidi` is true, the Yaku is added to the victory points calculation and listed in the points breakdown on the final result overlay.
 
+### Tile Back Color Customization Heuristics
+To let users customize the cosmetic theme of the game:
+- **Interactive Selector**: Renders a selector below the Difficulty panel on the Start screen with three options: Classic Green (經典綠), Retro Blue (復古藍), and Gold Yellow (金黃色).
+- **CSS Custom Variables (Theming)**: Binds class `.tile-back-green`, `.tile-back-blue`, or `.tile-back-yellow` to the `#app` root container. The class overrides:
+  - `--tGS` (tile back side color/gradient)
+  - `--tGB` (tile back bottom base shadow)
+  - `.tB` (the actual back face background and borders)
+  - `.haidiChanceCardFront` (the back-cover decoration inside the Haidi Chance mini-game)
+- **State & Local Storage**: Selection updates the React state `tileBackColor` and is written directly to browser `localStorage` as `street_mahjong_tile_back` for session-persistent state restoration on mount.
+
 
 
 

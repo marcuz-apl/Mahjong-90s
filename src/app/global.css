@@ -658,6 +658,25 @@ next-route-announcer,
   text-shadow: 0 0 6px var(--neonP);
 }
 
+.diffBtn.tbGreen.active {
+  border-color: #22c55e;
+  box-shadow: 0 0 12px #22c55e;
+  text-shadow: 0 0 6px #22c55e;
+  color: #fff;
+}
+.diffBtn.tbBlue.active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 12px #3b82f6;
+  text-shadow: 0 0 6px #3b82f6;
+  color: #fff;
+}
+.diffBtn.tbYellow.active {
+  border-color: #f59e0b;
+  box-shadow: 0 0 12px #f59e0b;
+  text-shadow: 0 0 6px #f59e0b;
+  color: #fff;
+}
+
 /* topBar Difficulty Indicator */
 .bDiff {
   font-weight: 900;
@@ -2053,4 +2072,35 @@ next-route-announcer,
   padding: 1px 6px;
   border-radius: 4px;
   text-shadow: 0 0 5px rgba(0, 255, 102, 0.5);
+}
+
+/* Custom Tile Back Color Themes */
+#app.tile-back-green {
+  --tGS: #166534;
+  --tGB: #14532d;
+}
+#app.tile-back-green .tB,
+#app.tile-back-green .haidiChanceCardFront {
+  background: linear-gradient(135deg, #16a34a, #14532d) !important;
+  border-color: #22c55e !important;
+}
+
+#app.tile-back-blue {
+  --tGS: #1e40af;
+  --tGB: #1e3a8a;
+}
+#app.tile-back-blue .tB,
+#app.tile-back-blue .haidiChanceCardFront {
+  background: linear-gradient(135deg, #2563eb, #1e3a8a) !important;
+  border-color: #3b82f6 !important;
+}
+
+#app.tile-back-yellow {
+  --tGS: #b45309;
+  --tGB: #78350f;
+}
+#app.tile-back-yellow .tB,
+#app.tile-back-yellow .haidiChanceCardFront {
+  background: linear-gradient(135deg, #d97706, #78350f) !important;
+  border-color: #f59e0b !important;
 }

@@ -206,6 +206,7 @@ const playDenshiSound = (type, customCount = 0) => {
 export default function GamePage() {
   const [mounted, setMounted] = useState(false);
   const [difficulty, setDifficulty] = useState('normal');
+  const [tileBackColor, setTileBackColor] = useState('green'); // 'green' | 'blue' | 'yellow'
   const [username, setUsername] = useState('');
   const [isGuest, setIsGuest] = useState(false);
   const [loginError, setLoginError] = useState('');
@@ -328,6 +329,10 @@ export default function GamePage() {
     const savedDiff = localStorage.getItem('street_mahjong_difficulty');
     if (savedDiff) {
       setDifficulty(savedDiff);
+    }
+    const savedTileBack = localStorage.getItem('street_mahjong_tile_back');
+    if (savedTileBack) {
+      setTileBackColor(savedTileBack);
     }
     const savedUser = localStorage.getItem('street_mahjong_user_id');
     if (savedUser) {
@@ -1160,6 +1165,11 @@ export default function GamePage() {
     localStorage.setItem('street_mahjong_difficulty', level);
   };
 
+  const handleTileBackChange = (color) => {
+    setTileBackColor(color);
+    localStorage.setItem('street_mahjong_tile_back', color);
+  };
+
   const handleLoginPlay = async (e) => {
     if (e && typeof e.preventDefault === 'function') e.preventDefault();
     setLoginError('');
@@ -1297,7 +1307,7 @@ export default function GamePage() {
   if (!mounted) return null;
 
   return (
-    <div id="app">
+    <div id="app" className={`tile-back-${tileBackColor}`}>
       {/* LOBBY PORTAL COVER SCREEN */}
       {screenState === 'portal' && (
         <div id="portalScreen">
@@ -1381,6 +1391,30 @@ export default function GamePage() {
                 onClick={() => handleDifficultyChange('hard')}
               >
                 困難 HARD
+              </button>
+            </div>
+          </div>
+
+          <div className="diffContainer" style={{ marginTop: '15px' }}>
+            <span className="diffLabel">選擇牌背顏色 / TILE BACK COLOR</span>
+            <div className="diffButtons">
+              <button 
+                className={`diffBtn tbGreen ${tileBackColor === 'green' ? 'active' : ''}`}
+                onClick={() => handleTileBackChange('green')}
+              >
+                經典綠 GREEN
+              </button>
+              <button 
+                className={`diffBtn tbBlue ${tileBackColor === 'blue' ? 'active' : ''}`}
+                onClick={() => handleTileBackChange('blue')}
+              >
+                復古藍 BLUE
+              </button>
+              <button 
+                className={`diffBtn tbYellow ${tileBackColor === 'yellow' ? 'active' : ''}`}
+                onClick={() => handleTileBackChange('yellow')}
+              >
+                金黃色 YELLOW
               </button>
             </div>
           </div>
