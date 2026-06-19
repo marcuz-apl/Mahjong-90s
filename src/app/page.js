@@ -95,7 +95,7 @@ export default function GamePage() {
     setWaitDisc(g._waitDisc);
   };
 
-  // --- User Initialization (Anonymous Sync with SQLite) ---
+  // --- User Initialization (Anonymous Sync with SQLite - data/mahjong-90s.db) ---
   useEffect(() => {
     async function initUser() {
       let localId = localStorage.getItem('street_mahjong_user_id');

@@ -1,8 +1,13 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
 
-// Store the SQLite DB in the project root
-const DB_PATH = path.join(process.cwd(), 'db.sqlite');
+// Store the SQLite DB in data/mahjong-90s.db
+const DATA_DIR = path.join(process.cwd(), 'data');
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+const DB_PATH = path.join(DATA_DIR, 'mahjong-90s.db');
 
 let db;
 
