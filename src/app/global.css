@@ -340,11 +340,34 @@ html,body{
   100%{transform:translateY(0)}
 }
 .ld{
-  animation:pD 1s infinite, discPopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  z-index: 10 !important;
+  animation: heartBeat 1.3s infinite ease-in-out, discPopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
-@keyframes pD{
-  0%,100%{box-shadow:0 0 8px var(--neonP),6px 6px 0 0 var(--tBot),7px 7px 10px rgba(0,0,0,.5)}
-  50%{box-shadow:0 0 18px var(--neonP),6px 6px 0 0 var(--tBot),7px 7px 10px rgba(0,0,0,.5)}
+@keyframes heartBeat {
+  0% {
+    transform: scale(1) translateY(0);
+    box-shadow: 0 0 8px var(--neonP), 6px 6px 0 0 var(--tBot), 7px 7px 10px rgba(0,0,0,.55);
+  }
+  14% {
+    transform: scale(1.12) translateY(-6px);
+    box-shadow: 0 0 25px var(--neonP), 0 0 40px var(--neonP), 6px 6px 0 0 var(--tBot), 7px 12px 18px rgba(0,0,0,.45);
+  }
+  28% {
+    transform: scale(1.04) translateY(-2px);
+    box-shadow: 0 0 12px var(--neonP), 6px 6px 0 0 var(--tBot), 7px 8px 12px rgba(0,0,0,.5);
+  }
+  42% {
+    transform: scale(1.16) translateY(-8px);
+    box-shadow: 0 0 30px var(--neonP), 0 0 50px var(--neonP), 6px 6px 0 0 var(--tBot), 7px 14px 20px rgba(0,0,0,.4);
+  }
+  70% {
+    transform: scale(1) translateY(0);
+    box-shadow: 0 0 8px var(--neonP), 6px 6px 0 0 var(--tBot), 7px 7px 10px rgba(0,0,0,.55);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    box-shadow: 0 0 8px var(--neonP), 6px 6px 0 0 var(--tBot), 7px 7px 10px rgba(0,0,0,.55);
+  }
 }
 @keyframes discPopIn {
   0% {
