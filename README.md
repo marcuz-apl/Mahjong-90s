@@ -1,4 +1,4 @@
-# StreetMachine-Mahjong (街機麻將 大滿貫)
+# Arcade Mahjong 90s (街機麻將 de 90s)
 
 A modern, web-based recreation of the classic 1990s street arcade mahjong machines (based on electronic kiban/electronic boards like *Electronic Base* and *Daimangan* by Dynax, Capcom, and IGS).
 
