@@ -1596,7 +1596,7 @@ export default function GamePage() {
                     return (
                       <div 
                         key={c} 
-                        className={`wheelItem ${isActive ? 'active' : ''}`}
+                        className={`wheelItem item-${c} ${isActive ? 'active' : ''}`}
                         onClick={() => handleTileBackChange(c)}
                       >
                         {labels[c]}

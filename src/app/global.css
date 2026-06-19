@@ -2576,4 +2576,45 @@ next-route-announcer,
   outline-color: #ffd700 !important;
 }
 
+/* Color Selector Wheel Items - Green, Blue, Yellow styling */
+.wheelItem.item-green {
+  color: rgba(46, 204, 113, 0.45);
+}
+.wheelItem.item-green:hover {
+  color: rgba(46, 204, 113, 0.85);
+}
+.wheelItem.item-green.active {
+  color: #2ecc71 !important;
+  text-shadow: 0 0 8px #2ecc71 !important;
+  background: rgba(46, 204, 113, 0.15) !important;
+  border: 1px solid #2ecc71 !important;
+}
+
+.wheelItem.item-blue {
+  color: rgba(52, 152, 219, 0.45);
+}
+.wheelItem.item-blue:hover {
+  color: rgba(52, 152, 219, 0.85);
+}
+.wheelItem.item-blue.active {
+  color: #3498db !important;
+  text-shadow: 0 0 8px #3498db !important;
+  background: rgba(52, 152, 219, 0.15) !important;
+  border: 1px solid #3498db !important;
+}
+
+.wheelItem.item-yellow {
+  color: rgba(241, 196, 15, 0.45);
+}
+.wheelItem.item-yellow:hover {
+  color: rgba(241, 196, 15, 0.85);
+}
+.wheelItem.item-yellow.active {
+  color: #ecc040 !important;
+  text-shadow: 0 0 8px #ecc040 !important;
+  background: rgba(241, 196, 15, 0.15) !important;
+  border: 1px solid #ecc040 !important;
+}
+
+
 
