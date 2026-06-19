@@ -1,4 +1,11 @@
+import { Noto_Sans_SC } from 'next/font/google';
 import './global.css';
+
+const notoSansSC = Noto_Sans_SC({
+  subsets: ['latin'],
+  weight: ['400', '700', '900'],
+  display: 'swap',
+});
 
 export const metadata = {
   title: '街機麻將 大滿貫',
@@ -7,11 +14,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="zh-CN">
-      <head>
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet" />
-      </head>
-      <body>{children}</body>
+    <html lang="zh-CN" className={notoSansSC.className} suppressHydrationWarning>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
