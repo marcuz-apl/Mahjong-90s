@@ -48,8 +48,13 @@ html,body{
 #startScreen.hidden{
   display:none;
 }
-#startScreen.denshi, #gameScreen.denshi {
+#startScreen.denshi {
   background: radial-gradient(circle at center, rgba(13, 33, 13, 0.9) 0%, rgba(5, 15, 5, 0.95) 100%), url('/denshi_bg.png') no-repeat center center !important;
+  background-size: cover !important;
+  background-blend-mode: multiply;
+}
+#gameScreen.denshi {
+  background: radial-gradient(circle at center, rgba(13, 33, 13, 0.92) 0%, rgba(5, 15, 5, 0.96) 100%), url('/mahjong-denshi-kiban-1.jpg') no-repeat center center !important;
   background-size: cover !important;
   background-blend-mode: multiply;
 }
