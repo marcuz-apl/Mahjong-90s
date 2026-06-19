@@ -98,6 +98,21 @@ Make sure you have Node.js (v18+) and npm installed.
    ```
 5. Click **"投幣開始"** (Insert Coin to Start) to load the assets and start playing!
 
+### Run with Docker
+
+Alternatively, you can run the game using Docker and Docker Compose (which includes SQLite database volume mounting for automated data persistence):
+
+1. Make sure you have Docker and Docker Compose installed.
+2. Build and start the container:
+   ```bash
+   docker compose up -d --build
+   ```
+3. Open your browser and navigate to `http://localhost:3000`.
+4. To stop the application:
+   ```bash
+   docker compose down
+   ```
+
 ---
 
 ## 👏 Credits
