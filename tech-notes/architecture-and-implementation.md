@@ -146,6 +146,20 @@ To allow players to exit gameplay rounds back to the start screen immediately wi
 - Configured a safe clean teardown handler (`handleQuitClick`) that sets game loop runner to false (`g.running = false`) and immediately resolves pending Promise callbacks for player discard and action selections with fallback default values, terminating active async game loops cleanly, and resets result screen states.
 - Added a keyboard shortcut (`Q` / `q`) bound to the keydown listener to trigger `handleQuitClick()` seamlessly in mouse-free play. Added visual instructions (`Q 退出`) to the bottom hotkey hints bar. Implemented a `handleQuitRef` reference routing model and a `showStartScreenRef` to ensure the keydown listener uses the latest component state values and works correctly on both the gameplay board and the round-result screen.
 
+### Seabed Win Chance & Haidi Laoyue (海底捞月) Mini-Game
+To implement the "Electronic Base" (电子基盘) specific Seabed Win Chance interactive sequence:
+- **Tenpai Trigger**: When the tile wall count reaches 0, instead of immediately declaring a draw (流局), if the player (Player 0) is in ready state (听牌 / Tenpai), they enter the interactive "海底機會" overlay.
+- **Tenpai Verification Heuristic**: Evaluates the player's 13-tile unmelded hand state (`g.hands[0]`) against all 34 possible tile variations using the utility `canWinWith(hand, tile)`. If any variations are valid, they are stored as the player's waiting list (听牌 list).
+- **Interactive Overlay & 3D Flip Anim**:
+  - The overlay presents three face-down cards styled as retro green-backed Mahjong tiles.
+  - Dynamically populates the three cards: 1 random winning tile from the player's waiting list, and 2 random unique non-winning tiles.
+  - Clicking a card triggers a 3D rotate transition (`transform: rotateY(180deg)`) and plays a custom rising triangle-wave chiptune sound effect (`card_flip`).
+  - After a 800ms flip animation, the other two cards automatically reveal their tiles with lower opacity (`opacity: 0.5`) to show the player where the remaining winning/losing cards were located.
+- **Victory & Draw Mechanics**:
+  - **Win (Haidi Laoyue)**: If the player flips the winning tile, it is pushed to their hand, and `endGameRef.current` is triggered for Player 0 as a Tsumo win. This activates the neon CRT laser strobe victory overlay (`#haidiOverlay`) and plays the custom-synthesized "电光石火" (lightning fire) chiptune victory theme (combining low-frequency thunder rumbles, sawtooth lightning zaps, stochastic white-noise bandpass-filtered sparks, and square-wave arpeggios).
+  - **Draw (流局)**: If a non-winning tile is chosen, the round ends in a standard draw.
+- **Yaku Scoring Integration**: Updated `calcHan` (inside `src/utils/mahjong.js`) to support the "海底撈月" Yaku (+1 Fan). If `isHaidi` is true, the Yaku is added to the victory points calculation and listed in the points breakdown on the final result overlay.
+
 
 
 
