@@ -26,6 +26,7 @@ export default function GamePage() {
   const [wallCount, setWallCount] = useState(0);
   const [hands, setHands] = useState([[], [], [], []]);
   const [discards, setDiscards] = useState([[], [], [], []]);
+  const [discardHistory, setDiscardHistory] = useState([]);
   const [melds, setMelds] = useState([[], [], [], []]);
   const [curPlayer, setCurPlayer] = useState(0);
   const [drawnTile, setDrawnTile] = useState(null);
@@ -61,6 +62,7 @@ export default function GamePage() {
     wall: [],
     hands: [[], [], [], []],
     discards: [[], [], [], []],
+    discardHistory: [],
     melds: [[], [], [], []],
     curPlayer: 0,
     drawnTile: null,
@@ -96,6 +98,7 @@ export default function GamePage() {
     setWallCount(g.wall.length);
     setHands(g.hands.map(h => [...h]));
     setDiscards(g.discards.map(d => [...d]));
+    setDiscardHistory(g.discardHistory ? [...g.discardHistory] : []);
     setMelds(g.melds.map(m => [...m]));
     setCurPlayer(g.curPlayer);
     setDrawnTile(g.drawnTile);
@@ -184,6 +187,7 @@ export default function GamePage() {
     const g = gameRef.current;
     g.hands = [[], [], [], []];
     g.discards = [[], [], [], []];
+    g.discardHistory = [];
     g.melds = [[], [], [], []];
     g.drawnTile = null;
     g.lastDisc = null;
@@ -225,6 +229,8 @@ export default function GamePage() {
     const g = gameRef.current;
     const t = g.hands[p].splice(idx, 1)[0];
     g.discards[p].push(t);
+    if (!g.discardHistory) g.discardHistory = [];
+    g.discardHistory.push(t);
     g.lastDisc = t;
     g.lastDiscP = p;
     g.newTileIdx = -1;
@@ -235,6 +241,7 @@ export default function GamePage() {
   const doPon = (p, tile) => {
     const g = gameRef.current;
     g.discards[g.lastDiscP].pop();
+    if (g.discardHistory) g.discardHistory.pop();
     let rm = 0;
     g.hands[p] = g.hands[p].filter(t => {
       if (t === tile && rm < 2) {
@@ -251,6 +258,7 @@ export default function GamePage() {
   const doMinkan = (p, tile) => {
     const g = gameRef.current;
     g.discards[g.lastDiscP].pop();
+    if (g.discardHistory) g.discardHistory.pop();
     let rm = 0;
     g.hands[p] = g.hands[p].filter(t => {
       if (t === tile && rm < 3) {
@@ -281,6 +289,7 @@ export default function GamePage() {
   const doChi = (p, tile, fromHand) => {
     const g = gameRef.current;
     g.discards[g.lastDiscP].pop();
+    if (g.discardHistory) g.discardHistory.pop();
     for (let i = 0; i < fromHand.length; i++) {
       const idx = g.hands[p].indexOf(fromHand[i]);
       if (idx >= 0) g.hands[p].splice(idx, 1);
@@ -894,6 +903,7 @@ export default function GamePage() {
 
     g.lastDisc = null;
     g.lastDiscP = -1;
+    g.discardHistory = [];
 
     setShowStartScreen(true);
     setCoinBtnDisabled(false);
@@ -1039,12 +1049,16 @@ export default function GamePage() {
             {/* Central Pool (牌河) */}
             <div id="aCenter">
               <div id="dPool">
-                {lastDisc !== null && (
-                  <div 
-                    className="tile tF szM ld"
-                    dangerouslySetInnerHTML={{ __html: svgCache[lastDisc] || '' }}
-                  />
-                )}
+                {discardHistory.map((t, idx) => {
+                  const isLast = idx === discardHistory.length - 1 && lastDisc !== null;
+                  return (
+                    <div 
+                      key={idx} 
+                      className={`tile tF szM ${isLast ? 'ld' : ''}`}
+                      dangerouslySetInnerHTML={{ __html: svgCache[t] || '' }}
+                    />
+                  );
+                })}
               </div>
             </div>
 
