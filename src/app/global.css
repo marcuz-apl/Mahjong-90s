@@ -1680,18 +1680,19 @@ next-route-announcer,
   align-items: center;
   gap: clamp(20px, 8vw, 100px);
   width: 100%;
-  max-width: 900px;
+  max-width: 1000px;
   flex: 1;
   z-index: 5;
-  margin: 20px 0;
+  margin-top: 55px;
+  margin-bottom: 20px;
 }
 
 /* Cabinet/Portal Cards */
 /* 3D Swinging Portal Doors */
 .portalCabinet {
   flex: 1;
-  max-width: 240px;
-  height: 460px;
+  max-width: 290px;
+  height: 530px;
   perspective: 1200px;
   cursor: pointer;
   position: relative;
