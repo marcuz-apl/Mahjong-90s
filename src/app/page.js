@@ -1112,7 +1112,11 @@ export default function GamePage() {
               <div className="cabTitle">電子基盤</div>
               <div className="cabScreen">
                 <div className="cabScreenGlow" />
-                <div style={{ fontSize: '48px' }}>🀄</div>
+                <img 
+                  src="/denshi_bg.png" 
+                  alt="電子基盤" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
               </div>
               <div className="cabDesc">
                 經典街機麻將規則<br />
@@ -1132,7 +1136,11 @@ export default function GamePage() {
               <div className="cabTitle">天開眼</div>
               <div className="cabScreen">
                 <div className="cabScreenGlow" />
-                <div style={{ fontSize: '48px' }}>👁️</div>
+                <img 
+                  src="/tiankai_bg.png" 
+                  alt="天開眼" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
               </div>
               <div className="cabDesc">
                 透視模式天開眼<br />
