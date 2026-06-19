@@ -1306,6 +1306,7 @@ export default function GamePage() {
     if (nextIdx < 0) nextIdx = diffs.length - 1;
     if (nextIdx >= diffs.length) nextIdx = 0;
     handleDifficultyChange(diffs[nextIdx]);
+    playDenshiSound('draw');
   };
 
   const handleTileBackCycle = (direction) => {
@@ -1315,6 +1316,7 @@ export default function GamePage() {
     if (nextIdx < 0) nextIdx = colors.length - 1;
     if (nextIdx >= colors.length) nextIdx = 0;
     handleTileBackChange(colors[nextIdx]);
+    playDenshiSound('draw');
   };
 
   const handleLoginPlay = async (e) => {
@@ -1520,10 +1522,29 @@ export default function GamePage() {
           {/* Left Panel: Selection Wheels */}
           <div className="startLeftPanel">
             {/* Difficulty Wheel */}
-            <div className="arcadeWheel">
+            <div 
+              className="arcadeWheel"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                  e.preventDefault();
+                  handleDifficultyCycle(-1);
+                } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                  e.preventDefault();
+                  handleDifficultyCycle(1);
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  playDenshiSound('card_flip');
+                  // Focus the next setting color wheel
+                  const nextWheel = document.querySelector('.startLeftPanel .arcadeWheel:nth-child(2)');
+                  if (nextWheel) nextWheel.focus();
+                }
+              }}
+              aria-label="選擇難度"
+            >
               <span className="wheelLabel">選擇難度 / DIFFICULTY</span>
               <div className="wheelViewport">
-                <button type="button" className="wheelBtn btnUp" onClick={() => handleDifficultyCycle(-1)}>▲</button>
+                <button type="button" className="wheelBtn btnUp" tabIndex={-1} onClick={() => handleDifficultyCycle(-1)}>▲</button>
                 <div className="wheelTrack">
                   {['easy', 'normal', 'hard'].map((d) => {
                     const isActive = difficulty === d;
@@ -1539,15 +1560,35 @@ export default function GamePage() {
                     );
                   })}
                 </div>
-                <button type="button" className="wheelBtn btnDown" onClick={() => handleDifficultyCycle(1)}>▼</button>
+                <button type="button" className="wheelBtn btnDown" tabIndex={-1} onClick={() => handleDifficultyCycle(1)}>▼</button>
               </div>
             </div>
 
             {/* Tile Back Color Wheel */}
-            <div className="arcadeWheel" style={{ marginTop: '20px' }}>
+            <div 
+              className="arcadeWheel" 
+              style={{ marginTop: '20px' }}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                  e.preventDefault();
+                  handleTileBackCycle(-1);
+                } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                  e.preventDefault();
+                  handleTileBackCycle(1);
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  playDenshiSound('card_flip');
+                  // Focus the mode toggle badge
+                  const modeBadge = document.querySelector('.portalModeBadge');
+                  if (modeBadge) modeBadge.focus();
+                }
+              }}
+              aria-label="牌背顏色"
+            >
               <span className="wheelLabel">牌背顏色 / TILE BACK</span>
               <div className="wheelViewport">
-                <button type="button" className="wheelBtn btnUp" onClick={() => handleTileBackCycle(-1)}>▲</button>
+                <button type="button" className="wheelBtn btnUp" tabIndex={-1} onClick={() => handleTileBackCycle(-1)}>▲</button>
                 <div className="wheelTrack">
                   {['green', 'blue', 'yellow'].map((c) => {
                     const isActive = tileBackColor === c;
@@ -1563,7 +1604,7 @@ export default function GamePage() {
                     );
                   })}
                 </div>
-                <button type="button" className="wheelBtn btnDown" onClick={() => handleTileBackCycle(1)}>▼</button>
+                <button type="button" className="wheelBtn btnDown" tabIndex={-1} onClick={() => handleTileBackCycle(1)}>▼</button>
               </div>
             </div>
           </div>
@@ -1576,7 +1617,25 @@ export default function GamePage() {
             
             <div 
               className={`portalModeBadge ${gameMode}`}
-              onClick={() => setGameMode(gameMode === 'tiankai' ? 'denshi' : 'tiankai')}
+              tabIndex={0}
+              onClick={() => {
+                setGameMode(gameMode === 'tiankai' ? 'denshi' : 'tiankai');
+                playDenshiSound('card_flip');
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setGameMode(gameMode === 'tiankai' ? 'denshi' : 'tiankai');
+                  playDenshiSound('card_flip');
+                  // Move focus to input
+                  const loginInput = document.querySelector('.loginInput');
+                  if (loginInput) loginInput.focus();
+                } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                  e.preventDefault();
+                  setGameMode(gameMode === 'tiankai' ? 'denshi' : 'tiankai');
+                  playDenshiSound('card_flip');
+                }
+              }}
             >
               模式: {gameMode === 'tiankai' ? '天開眼 (透視)' : '電子基盤 (經典)'}
             </div>
