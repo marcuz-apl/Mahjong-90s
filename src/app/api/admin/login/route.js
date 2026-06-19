@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { getSetting } from '@/lib/db';
 
 export async function POST(request) {
   try {
@@ -19,7 +20,8 @@ export async function POST(request) {
     }
 
     const { password } = body;
-    const correctPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const dbPassword = getSetting('admin_password');
+    const correctPassword = dbPassword || process.env.ADMIN_PASSWORD || 'admin123';
 
     if (password === correctPassword) {
       const cookieStore = await cookies();

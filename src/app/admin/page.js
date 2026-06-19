@@ -177,6 +177,11 @@ export default function AdminPage() {
   
   const [settingsSuccess, setSettingsSuccess] = useState('');
   const [usersSuccess, setUsersSuccess] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
 
   // Load auth state and initial data
   useEffect(() => {
@@ -346,6 +351,37 @@ export default function AdminPage() {
     }
   };
 
+  const handlePasswordSubmit = async (e) => {
+    if (e) e.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('兩次輸入的新密碼不一致！');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldPassword, newPassword })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setPasswordSuccess('管理員密碼已成功更新！');
+        setOldPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setTimeout(() => setPasswordSuccess(''), 5000);
+      } else {
+        setPasswordError(data.error || '密碼更新失敗，請檢查輸入。');
+      }
+    } catch (err) {
+      setPasswordError('網路連線失敗或伺服器出錯。');
+    }
+  };
+
   if (!mounted) return null;
 
   // --- Render Login Panel ---
@@ -418,6 +454,12 @@ export default function AdminPage() {
             onClick={() => { setActiveTab('settings'); loadSettings(); }}
           >
             ⚙️ 遊戲設置
+          </button>
+          <button 
+            className={`adminSidebarItem ${activeTab === 'password' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('password'); setPasswordError(''); setPasswordSuccess(''); }}
+          >
+            🔑 修改密碼
           </button>
         </aside>
 
@@ -799,6 +841,62 @@ export default function AdminPage() {
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TAB 4: PASSWORD */}
+          {activeTab === 'password' && (
+            <div className="adminTabContent">
+              <h2 className="adminTabHeading">🔑 修改管理員密碼</h2>
+              <form onSubmit={handlePasswordSubmit} className="adminSettingsForm" style={{ maxWidth: '500px' }}>
+                <div className="settingsSection">
+                  <h3 className="settingsSectionHeading">安全驗證</h3>
+                  <div className="settingsGrid" style={{ gridTemplateColumns: '1fr', gap: '15px' }}>
+                    <div className="settingsField">
+                      <label className="settingsLabel">當前密碼 / CURRENT PASSWORD</label>
+                      <input 
+                        type="password"
+                        className="settingsInput"
+                        placeholder="請輸入當前使用的管理員密碼..."
+                        value={oldPassword}
+                        onChange={(e) => setOldPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="settingsField">
+                      <label className="settingsLabel">新密碼 / NEW PASSWORD</label>
+                      <input 
+                        type="password"
+                        className="settingsInput"
+                        placeholder="請輸入新的管理員密碼..."
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
+                        minLength={4}
+                      />
+                    </div>
+                    <div className="settingsField">
+                      <label className="settingsLabel">確認新密碼 / CONFIRM NEW PASSWORD</label>
+                      <input 
+                        type="password"
+                        className="settingsInput"
+                        placeholder="請再次輸入新密碼以進行確認..."
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        minLength={4}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="settingsActionRow" style={{ marginTop: '20px' }}>
+                  <button type="submit" className="saveSettingsBtn">更新密碼</button>
+                </div>
+              </form>
+
+              {passwordSuccess && <div className="settingsSuccessMsg" style={{ marginTop: '15px' }}>{passwordSuccess}</div>}
+              {passwordError && <div className="adminLoginError" style={{ marginTop: '15px', color: '#ff4d4d' }}>{passwordError}</div>}
             </div>
           )}
 
