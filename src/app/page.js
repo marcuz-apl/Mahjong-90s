@@ -89,6 +89,8 @@ export default function GamePage() {
   const handleQuitRef = useRef(null);
   const showStartScreenRef = useRef(true);
   showStartScreenRef.current = showStartScreen;
+  const actionPanelOptionsRef = useRef([]);
+  actionPanelOptionsRef.current = actionPanelOptions;
 
   // Synchronize async gameRef state to React states
   const syncState = () => {
@@ -762,7 +764,7 @@ export default function GamePage() {
 
   const triggerClickAB = (cls) => {
     // Proactively resolve actionPanel options based on hotkey key matches
-    const act = actionPanelOptions.find(o => {
+    const act = actionPanelOptionsRef.current.find(o => {
       if (cls === 'abW' && o.key === 'H') return true;
       if (cls === 'abP' && o.key === 'P') return true;
       if (cls === 'abK' && o.key === 'K') return true;
