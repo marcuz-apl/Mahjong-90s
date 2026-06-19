@@ -1916,24 +1916,50 @@ next-route-announcer,
 
 /* Portal Mode Badge on Start Screen */
 .portalModeBadge {
-  padding: 4px 12px;
-  font-size: 12px;
+  padding: 12px 36px;
+  font-size: 18px;
   font-weight: 900;
-  border-radius: 4px;
-  margin-bottom: 15px;
+  border-radius: 50px;
+  margin-bottom: 25px;
   letter-spacing: 0.1em;
+  cursor: pointer;
+  display: inline-block;
+  user-select: none;
+  transition: all 0.1s ease;
+  position: relative;
+  text-align: center;
 }
 .portalModeBadge.denshi {
-  background: rgba(212, 168, 67, 0.12);
-  border: 1px solid var(--gold);
-  color: var(--goldB);
-  text-shadow: 0 0 5px var(--gold);
+  background: linear-gradient(180deg, #ffd700 0%, #d4a843 100%);
+  border: 3px solid #fff;
+  color: #000;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 6px 0 #8c6a28, 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+.portalModeBadge.denshi:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 8px 0 #8c6a28, 0 12px 24px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
+.portalModeBadge.denshi:active {
+  box-shadow: 0 2px 0 #8c6a28, 0 4px 8px rgba(0, 0, 0, 0.4);
+  transform: translateY(4px);
 }
 .portalModeBadge.tiankai {
-  background: rgba(255, 45, 117, 0.12);
-  border: 1px solid var(--neonP);
-  color: var(--neonP);
-  text-shadow: 0 0 5px var(--neonP);
+  background: linear-gradient(180deg, #ff2d75 0%, #c41c52 100%);
+  border: 3px solid #fff;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 0 #8a1438, 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+.portalModeBadge.tiankai:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 8px 0 #8a1438, 0 12px 24px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
+.portalModeBadge.tiankai:active {
+  box-shadow: 0 2px 0 #8a1438, 0 4px 8px rgba(0, 0, 0, 0.4);
+  transform: translateY(4px);
 }
 
 /* Gameplay topBar Mode Indicator */

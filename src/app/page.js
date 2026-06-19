@@ -1411,7 +1411,10 @@ export default function GamePage() {
           <div className="titleSub">ARCADE MAHJONG</div>
           <div className="decoLine"></div>
           
-          <div className={`portalModeBadge ${gameMode}`}>
+          <div 
+            className={`portalModeBadge ${gameMode}`}
+            onClick={() => setGameMode(gameMode === 'tiankai' ? 'denshi' : 'tiankai')}
+          >
             模式: {gameMode === 'tiankai' ? '天開眼 (透視)' : '電子基盤 (經典)'}
           </div>
 
