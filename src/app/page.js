@@ -872,27 +872,25 @@ export default function GamePage() {
   };
 
   const handleQuitClick = () => {
-    if (confirm('確定要退出當前對局並返回首頁嗎？')) {
-      const g = gameRef.current;
-      g.running = false;
-      g._waitDisc = false;
+    const g = gameRef.current;
+    g.running = false;
+    g._waitDisc = false;
 
-      // Resolve pending async promises to terminate loops cleanly
-      if (resolveDiscRef.current) {
-        const resolve = resolveDiscRef.current;
-        resolveDiscRef.current = null;
-        resolve(-1);
-      }
-      if (resolveActRef.current) {
-        const resolve = resolveActRef.current;
-        resolveActRef.current = null;
-        resolve({ type: 'pass' });
-      }
-
-      setShowStartScreen(true);
-      setCoinBtnDisabled(false);
-      setActionPanelOptions([]);
+    // Resolve pending async promises to terminate loops cleanly
+    if (resolveDiscRef.current) {
+      const resolve = resolveDiscRef.current;
+      resolveDiscRef.current = null;
+      resolve(-1);
     }
+    if (resolveActRef.current) {
+      const resolve = resolveActRef.current;
+      resolveActRef.current = null;
+      resolve({ type: 'pass' });
+    }
+
+    setShowStartScreen(true);
+    setCoinBtnDisabled(false);
+    setActionPanelOptions([]);
   };
   handleQuitRef.current = handleQuitClick;
 
