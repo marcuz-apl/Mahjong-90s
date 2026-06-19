@@ -69,7 +69,8 @@ export default function GamePage() {
     newTileIdx: -1,
     selIdx: -1,
     _waitDisc: false,
-    difficulty: 'normal'
+    difficulty: 'normal',
+    isGuest: false
   });
 
   const userIdRef = useRef('');
@@ -387,21 +388,25 @@ export default function GamePage() {
 
     if (winner === -1) {
       showMsg('流局');
-      // Save draw round to database
-      try {
-        await fetch('/api/game', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: userIdRef.current,
-            round: g.round,
-            outcome: 'draw',
-            scoreChange: 0,
-            newChips: g.score
-          })
-        });
-      } catch (e) {
-        console.error('Failed to sync draw outcome:', e);
+      // Save draw round to database only if NOT in Guest mode
+      if (!g.isGuest) {
+        try {
+          await fetch('/api/game', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: userIdRef.current,
+              round: g.round,
+              outcome: 'draw',
+              scoreChange: 0,
+              newChips: g.score
+            })
+          });
+        } catch (e) {
+          console.error('Failed to sync draw outcome:', e);
+        }
+      } else {
+        localStorage.setItem('street_mahjong_guest_chips', g.score.toString());
       }
 
       setTimeout(() => {
@@ -433,22 +438,26 @@ export default function GamePage() {
     }
     syncState();
 
-    // Sync score/outcome with SQLite
-    try {
-      await fetch('/api/game', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: userIdRef.current,
-          round: g.round,
-          outcome,
-          scoreChange,
-          newChips: g.score,
-          yakuDetails: winner === 0 ? res : null
-        })
-      });
-    } catch (e) {
-      console.error('Failed to sync win/loss outcome:', e);
+    // Sync score/outcome with SQLite only if NOT in Guest mode
+    if (!g.isGuest) {
+      try {
+        await fetch('/api/game', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: userIdRef.current,
+            round: g.round,
+            outcome,
+            scoreChange,
+            newChips: g.score,
+            yakuDetails: winner === 0 ? res : null
+          })
+        });
+      } catch (e) {
+        console.error('Failed to sync win/loss outcome:', e);
+      }
+    } else {
+      localStorage.setItem('street_mahjong_guest_chips', g.score.toString());
     }
 
     setTimeout(() => {
@@ -779,9 +788,79 @@ export default function GamePage() {
     localStorage.setItem('street_mahjong_difficulty', level);
   };
 
-  const handleCoinBtnClick = async () => {
+  const handleLoginPlay = async (e) => {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    setLoginError('');
+
+    if (!username) {
+      setLoginError('請輸入用戶名');
+      return;
+    }
+
+    const trimmed = username.trim();
+    if (trimmed.length < 2 || trimmed.length > 12) {
+      setLoginError('用戶名長度必須在 2 到 12 個字元之間');
+      return;
+    }
+
+    const usernameRegex = /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/;
+    if (!usernameRegex.test(trimmed)) {
+      setLoginError('用戶名只能包含中文、英文字母、數字、底線和破折號');
+      return;
+    }
+
     setCoinBtnDisabled(true);
+    try {
+      const res = await fetch('/api/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: trimmed })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        gameRef.current.score = data.user.chips;
+        gameRef.current.isGuest = false;
+        gameRef.current.difficulty = difficulty;
+        userIdRef.current = trimmed;
+        setScore(data.user.chips);
+        setIsGuest(false);
+        localStorage.setItem('street_mahjong_user_id', trimmed);
+
+        const loaded = await preloadAssets();
+        setShowStartScreen(false);
+        startGame();
+      } else {
+        const data = await res.json();
+        setLoginError(data.error || '登入失敗，請重試');
+        setCoinBtnDisabled(false);
+      }
+    } catch (err) {
+      console.error('Login request error:', err);
+      setLoginError('伺服器連線失敗，請重試');
+      setCoinBtnDisabled(false);
+    }
+  };
+
+  const handleGuestPlay = async () => {
+    setLoginError('');
+    setCoinBtnDisabled(true);
+
+    let guestChips = 10000;
+    const savedChips = localStorage.getItem('street_mahjong_guest_chips');
+    if (savedChips) {
+      const parsed = parseInt(savedChips, 10);
+      if (!isNaN(parsed) && parsed >= 0) {
+        guestChips = parsed;
+      }
+    }
+
+    gameRef.current.score = guestChips;
+    gameRef.current.isGuest = true;
     gameRef.current.difficulty = difficulty;
+    userIdRef.current = '';
+    setScore(guestChips);
+    setIsGuest(true);
+
     const loaded = await preloadAssets();
     setShowStartScreen(false);
     startGame();
@@ -850,15 +929,38 @@ export default function GamePage() {
             </div>
           </div>
 
-          <button 
-            className="coinBtn" 
-            id="coinBtn" 
-            onClick={handleCoinBtnClick}
-            disabled={coinBtnDisabled}
-          >
-            投 幣 開 始
-          </button>
-          <div className="coinLabel">INSERT COIN TO START</div>
+          <div className="loginContainer">
+            <form onSubmit={handleLoginPlay} className="loginForm">
+              <input 
+                type="text" 
+                className="loginInput" 
+                placeholder="輸入用戶名 (2-12字元)..."
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={coinBtnDisabled}
+              />
+              
+              <div className="startActions">
+                <button 
+                  type="submit"
+                  className="startBtn loginBtn" 
+                  disabled={coinBtnDisabled}
+                >
+                  登入並記錄
+                </button>
+                <button 
+                  type="button"
+                  className="startBtn guestBtn" 
+                  onClick={handleGuestPlay}
+                  disabled={coinBtnDisabled}
+                >
+                  訪客試玩
+                </button>
+              </div>
+            </form>
+            {loginError && <div className="loginError">{loginError}</div>}
+          </div>
+
           <div id="loadStatus" className={loadStatusShow ? 'show' : ''}>
             {loadStatusText}
           </div>
@@ -868,6 +970,7 @@ export default function GamePage() {
       {/* GAME SCREEN */}
       <div id="gameScreen" className={!showStartScreen ? 'active' : ''}>
         <div id="topBar">
+          <span className="bI">玩家: <span className="bPlayerName">{isGuest ? '訪客' : username}</span></span>
           <span className="bI">籌碼 <span className="bS" id="elS">{score}</span></span>
           <span className="bI bR" id="elR">第 {round} 局</span>
           <span className="bI">難度: <span className={`bDiff ${difficulty}`} id="elDiff">
