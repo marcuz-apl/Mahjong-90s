@@ -154,7 +154,8 @@ To draw focus immediately to the newest discard:
 To allow players to exit gameplay rounds back to the start screen:
 - Added a retro crimson-red styled `quitBtn` to the `topBar`.
 - Configured a safe clean teardown handler (`handleQuitClick`) that sets game loop runner to false (`g.running = false`) and immediately resolves pending Promise callbacks for player discard and action selections with fallback default values, terminating async loops cleanly.
-- Added a keyboard shortcut (`Q` / `q`) bound to the keydown listener to trigger `handleQuitClick()` seamlessly in mouse-free play. Added visual instructions (`Q 退出`) to the bottom hotkey hints bar.
+- Added a keyboard shortcut (`Q` / `q`) bound to the keydown listener to trigger `handleQuitClick()` seamlessly in mouse-free play. Added visual instructions (`Q 退出`) to the bottom hotkey hints bar. Implemented a `handleQuitRef` reference routing model to prevent stale closures inside the mount-level keydown event listener.
+
 
 
 
