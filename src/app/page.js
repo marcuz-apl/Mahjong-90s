@@ -14,6 +14,70 @@ import {
   delay
 } from '@/utils/mahjong';
 
+// Web Audio API Retro Arcade Synthesizer for Haidi Tsumo win
+const playHaidiSound = () => {
+  if (typeof window === 'undefined') return;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+  
+  const ctx = new AudioCtx();
+  
+  // 1. Rising Retro Laser Siren
+  const osc1 = ctx.createOscillator();
+  const gain1 = ctx.createGain();
+  osc1.type = 'sawtooth';
+  osc1.frequency.setValueAtTime(100, ctx.currentTime);
+  osc1.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 1.2);
+  gain1.gain.setValueAtTime(0.12, ctx.currentTime);
+  gain1.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 1.2);
+  osc1.connect(gain1);
+  gain1.connect(ctx.destination);
+  osc1.start();
+  osc1.stop(ctx.currentTime + 1.2);
+  
+  // 2. Metallic Ringing Strobe Beeps
+  const playBeep = (time, freq, dur) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(freq, time);
+    gain.gain.setValueAtTime(0.1, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(time);
+    osc.stop(time + dur);
+  };
+  
+  // Play a sequence of rapid ringing alarm beeps during the sweep
+  for (let i = 0; i < 8; i++) {
+    playBeep(ctx.currentTime + i * 0.15, 880 + (i % 2 === 0 ? 100 : -100), 0.12);
+  }
+  
+  // 3. Victory Fanfare Synth Chords (starts after siren, at 1.2s)
+  const playSynthChord = (time, freqs, duration) => {
+    freqs.forEach(freq => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, time);
+      gain.gain.setValueAtTime(0, time);
+      gain.gain.linearRampToValueAtTime(0.08, time + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(time);
+      osc.stop(time + duration);
+    });
+  };
+  
+  const startTime = ctx.currentTime + 1.2;
+  playSynthChord(startTime, [261.63, 329.63, 392.00, 523.25], 0.6);
+  playSynthChord(startTime + 0.6, [349.23, 440.00, 523.25, 698.46], 0.6);
+  playSynthChord(startTime + 1.2, [392.00, 493.88, 587.33, 783.99], 0.6);
+  playSynthChord(startTime + 1.8, [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50], 1.8);
+};
+
 export default function GamePage() {
   const [mounted, setMounted] = useState(false);
   const [difficulty, setDifficulty] = useState('normal');
@@ -49,6 +113,9 @@ export default function GamePage() {
 
   const [resultScreenActive, setResultScreenActive] = useState(false);
   const [resultScreenData, setResultScreenData] = useState(null);
+
+  const [haidiOverlayActive, setHaidiOverlayActive] = useState(false);
+  const [haidiTile, setHaidiTile] = useState(null);
 
   // SVG Caching
   const [svgCache, setSvgCache] = useState({});
@@ -440,6 +507,15 @@ export default function GamePage() {
     g.running = false;
     g._waitDisc = false;
     syncState();
+
+    const isHaidi = winner === 0 && isTsumo && g.wall.length === 0;
+    if (isHaidi) {
+      setHaidiTile(winTile);
+      setHaidiOverlayActive(true);
+      playHaidiSound();
+      await delay(4500);
+      setHaidiOverlayActive(false);
+    }
 
     if (winner === -1) {
       showMsg('流局');
@@ -850,6 +926,16 @@ export default function GamePage() {
     setTimeout(() => f.remove(), 750);
   };
 
+  const triggerHaidiDemo = () => {
+    const demoTile = Math.floor(Math.random() * 34);
+    setHaidiTile(demoTile);
+    setHaidiOverlayActive(true);
+    playHaidiSound();
+    setTimeout(() => {
+      setHaidiOverlayActive(false);
+    }, 4500);
+  };
+
   const handleDifficultyChange = (level) => {
     setDifficulty(level);
     localStorage.setItem('street_mahjong_difficulty', level);
@@ -1054,6 +1140,14 @@ export default function GamePage() {
               </div>
             </form>
             {loginError && <div className="loginError">{loginError}</div>}
+            <button 
+              type="button" 
+              className="startBtn demoHaidiBtn" 
+              onClick={triggerHaidiDemo}
+              style={{ width: '100%', marginTop: '15px' }}
+            >
+              🌌 演示海底撈月效果 (音效)
+            </button>
             <div className="adminEntranceLink">
               <Link href="/admin">⚙️ 進入管理後台</Link>
             </div>
@@ -1217,6 +1311,24 @@ export default function GamePage() {
             <button className="nBtn resQuitBtn" onClick={handleQuitClick}>
               退出
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* HAIDI LAOYUE OVERLAY */}
+      {haidiOverlayActive && (
+        <div id="haidiOverlay">
+          <div className="crtScanlines" />
+          <div className="crtVignette" />
+          <div className="haidiTitle">海底撈月</div>
+          <div className="haidiSub">LAST TILE TSUMO WIN!</div>
+          <div className="haidiTileContainer">
+            <div className="haidiTileLabel">獲勝海底牌 / SEABED TILE</div>
+            <div 
+              className="tile tF szN haidiTileGlow"
+              dangerouslySetInnerHTML={{ __html: svgCache[haidiTile] || '' }}
+              style={{ width: '90px', height: '120px' }}
+            />
           </div>
         </div>
       )}
