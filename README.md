@@ -1,7 +1,8 @@
 # Arcade Mahjong 90s (街機麻將 de 90s)
 
 ## What is Mahjong
-Julia Roberts is an avid [Mahjong](https://en.wikipedia.org/wiki/Mahjong) player who uses the tile-based game as a weekly ritual to relax, bond with friends, and find philosophical meaning. She views the game as a beautiful metaphor for life, famously stating, "The concept of it is to create order out of chaos based on random drawing of tiles." Check this out: [The Late Show with Stephen Colbert](https://www.youtube.com/watch?v=Wb_T0FS2IRs)
+[Julia Roberts](https://en.wikipedia.org/wiki/Julia_Roberts) is an avid [Mahjong](https://en.wikipedia.org/wiki/Mahjong) player who uses the tile-based game as a weekly ritual to relax, bond with friends, and find philosophical meaning. She views the game as a beautiful metaphor for life, famously stating, "The concept of it is to create order out of chaos based on random drawing of tiles." Check this out: [
+Julia Roberts Calms Down By Playing Mahjong at "The Late Show with Stephen Colbert"](https://www.youtube.com/watch?v=Wb_T0FS2IRs)
 
 
 ----
