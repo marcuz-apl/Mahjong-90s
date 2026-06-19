@@ -1669,8 +1669,8 @@ next-route-announcer,
 
 .portalSubTitle {
   font-size: clamp(14px, 2.5vw, 24px);
-  color: #00ffff;
-  text-shadow: 0 0 10px #00ffff;
+  color: #ab37ff;
+  text-shadow: 0 0 10px #ab37ff, 0 0 20px rgba(171, 55, 255, 0.4);
   letter-spacing: 0.3em;
 }
 
