@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import {
   tSuit,
   tVal,
@@ -91,6 +92,18 @@ export default function GamePage() {
   showStartScreenRef.current = showStartScreen;
   const actionPanelOptionsRef = useRef([]);
   actionPanelOptionsRef.current = actionPanelOptions;
+  const settingsRef = useRef({
+    default_start_chips: '10000',
+    ai_pon_rate_easy: '0.1',
+    ai_pon_rate_normal: '0.3',
+    ai_pon_rate_hard: '0.5',
+    ai_chi_rate_easy: '0.2',
+    ai_chi_rate_normal: '0.5',
+    ai_chi_rate_hard: '0.8',
+    ai_randomness_easy: '0.4',
+    ai_randomness_normal: '0.15',
+    ai_randomness_hard: '0.0'
+  });
 
   // Synchronize async gameRef state to React states
   const syncState = () => {
@@ -122,6 +135,22 @@ export default function GamePage() {
     if (savedUser) {
       setUsername(savedUser);
     }
+
+    const loadGlobalSettings = async () => {
+      try {
+        const res = await fetch('/api/admin/settings');
+        const data = await res.json();
+        if (data.settings) {
+          settingsRef.current = { ...settingsRef.current, ...data.settings };
+          const startChips = parseInt(data.settings.default_start_chips || '10000', 10);
+          setScore(prev => prev === 10000 ? startChips : prev);
+          gameRef.current.score = gameRef.current.score === 10000 ? startChips : gameRef.current.score;
+        }
+      } catch (e) {
+        console.error('Failed to load global settings:', e);
+      }
+    };
+    loadGlobalSettings();
   }, []);
 
   // --- Preload and Clean local SVGs ---
@@ -337,11 +366,16 @@ export default function GamePage() {
     if (hand.length === 0) return 0;
     
     const diff = gameRef.current.difficulty || 'normal';
-    if (diff === 'easy' && Math.random() < 0.40) {
-      return Math.floor(Math.random() * hand.length);
-    }
-    if (diff === 'normal' && Math.random() < 0.15) {
-      return Math.floor(Math.random() * hand.length);
+    const settings = settingsRef.current;
+    if (diff === 'easy') {
+      const randomness = parseFloat(settings.ai_randomness_easy || '0.4');
+      if (Math.random() < randomness) return Math.floor(Math.random() * hand.length);
+    } else if (diff === 'normal') {
+      const randomness = parseFloat(settings.ai_randomness_normal || '0.15');
+      if (Math.random() < randomness) return Math.floor(Math.random() * hand.length);
+    } else {
+      const randomness = parseFloat(settings.ai_randomness_hard || '0.0');
+      if (Math.random() < randomness) return Math.floor(Math.random() * hand.length);
     }
 
     const c = new Array(34).fill(0);
@@ -375,13 +409,14 @@ export default function GamePage() {
     if (c >= 3) return true;
 
     const diff = gameRef.current.difficulty || 'normal';
+    const settings = settingsRef.current;
     const roll = Math.random();
     if (diff === 'easy') {
-      return roll < 0.10;
+      return roll < parseFloat(settings.ai_pon_rate_easy || '0.1');
     } else if (diff === 'normal') {
-      return roll < 0.30;
+      return roll < parseFloat(settings.ai_pon_rate_normal || '0.3');
     } else {
-      return roll < 0.50;
+      return roll < parseFloat(settings.ai_pon_rate_hard || '0.5');
     }
   };
 
@@ -636,11 +671,17 @@ export default function GamePage() {
         }
       } else {
         const diff = gameRef.current.difficulty || 'normal';
-        let chiThreshold = 0.5; // Normal: 50%
-        if (diff === 'easy') chiThreshold = 0.8; // Easy: 20%
-        if (diff === 'hard') chiThreshold = 0.2; // Hard: 80%
+        const settings = settingsRef.current;
+        let chiRate = 0.5; // default Normal
+        if (diff === 'easy') {
+          chiRate = parseFloat(settings.ai_chi_rate_easy || '0.2');
+        } else if (diff === 'hard') {
+          chiRate = parseFloat(settings.ai_chi_rate_hard || '0.8');
+        } else {
+          chiRate = parseFloat(settings.ai_chi_rate_normal || '0.5');
+        }
 
-        if (Math.random() > chiThreshold) {
+        if (Math.random() < chiRate) {
           const fromH = chiOpts[0].filter(t => t !== tile);
           doChi(nextP, tile, fromH);
           syncState();
@@ -865,7 +906,7 @@ export default function GamePage() {
     setLoginError('');
     setCoinBtnDisabled(true);
 
-    let guestChips = 10000;
+    let guestChips = parseInt(settingsRef.current.default_start_chips || '10000', 10);
     const savedChips = localStorage.getItem('street_mahjong_guest_chips');
     if (savedChips) {
       const parsed = parseInt(savedChips, 10);
@@ -1007,6 +1048,9 @@ export default function GamePage() {
               </div>
             </form>
             {loginError && <div className="loginError">{loginError}</div>}
+            <div className="adminEntranceLink">
+              <Link href="/admin">⚙️ 進入管理後台</Link>
+            </div>
           </div>
 
           <div id="loadStatus" className={loadStatusShow ? 'show' : ''}>
