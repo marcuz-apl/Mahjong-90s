@@ -6,6 +6,33 @@ This game features the iconic dark red and gold cabinet visuals, golden neon glo
 
 ---
 
+## 📸 Game Interface Preview
+
+Here are some screenshots showcasing the interface, gameplay modes, and custom features of the game:
+
+### 1. Main Lobby Portal Screen
+![Main Interface](./public/readbook/arcade-mahjong-demo-1-interface.png)
+
+### 2. Electronic Board (電子基盤) Mode
+![Electronic Board Mode](./public/readbook/arcade-mahjong-demo-2-electronic-base.png)
+
+### 3. Tian Kai Yan (天開眼) Mode
+![Tian Kai Yan Mode](./public/readbook/arcade-mahjong-demo-3-tiankaigen.png)
+
+### 4. Winning Hand Showcase (胡牌)
+![Winning Hand](./public/readbook/arcade-mahjong-demo-4-hupaile.png)
+
+### 5. Start Screen Option Selector & 3D Drum Wheels
+![Tile Back Customization](./public/readbook/arcade-mahjong-demo-5-tileback.png)
+
+### 6. Nostalgic Read Me (讀我) Page
+![Nostalgic Read Me Page](./public/readbook/arcade-mahjong-demo-6-readme.png)
+
+### 7. Complete Overview
+![Complete Overview](./public/readbook/arcade-mahjong-demo-7-full.png)
+
+---
+
 ## 🎮 Game Features
 - **4-Player Local Game**: 1 human player vs. 3 responsive computer AI players.
 - **Traditional Tileset**: 136 standard Japanese mahjong tiles (Characters, Dots, Bamboo, Winds, and Dragons).
