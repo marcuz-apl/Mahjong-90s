@@ -150,4 +150,10 @@ To draw focus immediately to the newest discard:
   2. An infinite double-pulse rhythm (`heartBeat`) that physical scales the active tile to `1.16`, translates it upward by `8px` to float above adjacent tiles, and applies a rapid neon-pink heartbeat shadow pulse.
 - Configured a floating layer override (`z-index: 10 !important`) on the active discard tile to ensure it sits on top of all surrounding elements.
 
+### Playtable Exit & Quit Button
+To allow players to exit gameplay rounds back to the start screen:
+- Added a retro crimson-red styled `quitBtn` to the `topBar`.
+- Configured a safe clean teardown handler (`handleQuitClick`) that sets game loop runner to false (`g.running = false`) and immediately resolves pending Promise callbacks for player discard and action selections with fallback default values, terminating async loops cleanly.
+
+
 
