@@ -14,6 +14,8 @@ import {
 } from '@/utils/mahjong';
 
 export default function GamePage() {
+  const [mounted, setMounted] = useState(false);
+
   // --- React State for rendering ---
   const [score, setScore] = useState(10000);
   const [round, setRound] = useState(1);
@@ -97,6 +99,7 @@ export default function GamePage() {
 
   // --- User Initialization (Anonymous Sync with SQLite - data/mahjong-90s.db) ---
   useEffect(() => {
+    setMounted(true);
     async function initUser() {
       let localId = localStorage.getItem('street_mahjong_user_id');
       if (!localId) {
@@ -794,6 +797,8 @@ export default function GamePage() {
       resolve(idx);
     }
   };
+
+  if (!mounted) return null;
 
   return (
     <div id="app">
