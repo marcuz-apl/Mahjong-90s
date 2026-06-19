@@ -28,13 +28,24 @@ export async function POST(request) {
     const { userId } = body;
 
     if (!userId) {
-      return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+      return NextResponse.json({ error: '請輸入用戶名' }, { status: 400 });
+    }
+
+    const trimmedId = userId.trim();
+    if (trimmedId.length < 2 || trimmedId.length > 12) {
+      return NextResponse.json({ error: '用戶名長度必須在 2 到 12 個字元之間' }, { status: 400 });
+    }
+
+    // Allow letters, numbers, underscores, dashes, and Chinese characters
+    const usernameRegex = /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/;
+    if (!usernameRegex.test(trimmedId)) {
+      return NextResponse.json({ error: '用戶名只能包含中文、英文字母、數字、底線和破折號' }, { status: 400 });
     }
 
     // Check if user already exists
-    let user = getUser(userId);
+    let user = getUser(trimmedId);
     if (!user) {
-      user = createUser(userId);
+      user = createUser(trimmedId);
     }
 
     return NextResponse.json({ user });
