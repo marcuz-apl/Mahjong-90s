@@ -152,7 +152,7 @@ export default function GamePage() {
 
   const preloadAssets = async () => {
     setLoadStatusShow(true);
-    setLoadStatusText('正在加載本地矢量圖資源...');
+    setLoadStatusText('正在加載遊戲...');
     const cache = {};
     let loaded = 0;
 
@@ -165,7 +165,7 @@ export default function GamePage() {
           cache[i] = cleanSvg(txt, fid);
           loaded++;
           setSvgLoadedCount(loaded);
-          setLoadStatusText(`加載本地矢量圖 ${loaded}/34`);
+          setLoadStatusText(`加載遊戲 ${loaded}/34`);
         }
       } catch (e) {
         console.error(`Failed to load SVG for ${fid}:`, e);
