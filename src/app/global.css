@@ -1617,12 +1617,12 @@ next-route-announcer,
 }
 
 .decorEN {
-  bottom: 12%;
-  right: 8%;
+  top: 18%;
+  left: 5%;
   font-size: clamp(20px, 4vw, 42px);
   color: #00ffff;
   text-shadow: 0 0 15px #00ffff, 0 0 30px rgba(0, 255, 255, 0.6);
-  transform: rotate(5deg);
+  transform: rotate(-5deg);
   animation-delay: -2s;
   letter-spacing: 0.1em;
 }
