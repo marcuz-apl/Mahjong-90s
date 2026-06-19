@@ -45,8 +45,8 @@ StreetMachine-Mahjong/
 ├── .git/
 │   └── hooks/
 │       └── pre-commit           # Auto-version bumping git hook
-├── data/                        # SQLite Database directory (Gitignored)
-│   └── mahjong-90s.db
+├── data/                        # SQLite Database directory
+│   └── mahjong-90s.db           # SQLite Database file (Tracked in Git)
 ├── public/                      # Static Assets served by Next.js
 │   └── vectors/                 # Standard and transparent SVG sets
 ├── scripts/
@@ -56,14 +56,14 @@ StreetMachine-Mahjong/
 │   │   ├── api/
 │   │   │   ├── game/route.js    # Outcome persistence API
 │   │   │   └── user/route.js    # Anonymous session management API
-│   │   ├── global.css           # Vanilla styling, golden gradients, 3D tiles
+│   │   ├── global.css           # Vanilla styling, glowing gradients, 3D tiles
 │   │   ├── layout.js            # Standard HTML Layout page
 │   │   └── page.js              # Interactive React Board & Game loop orchestrator
 │   ├── lib/
 │   │   └── db.js                # SQLite better-sqlite3 wrapper & schema
 │   └── utils/
 │       └── mahjong.js           # Rule validator, Yaku scoring engine, and AI logic
-├── .gitignore                   # Excludes node_modules, builds, and SQLite DB
+├── .gitignore                   # Excludes node_modules, builds, etc. (Except SQLite DB)
 ├── jsconfig.json                # Configures absolute imports (@/* -> src/*)
 ├── next.config.js               # Externalizes better-sqlite3 from Webpack
 └── package.json                 # Project dependencies & versions
