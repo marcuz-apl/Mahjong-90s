@@ -2162,3 +2162,395 @@ next-route-announcer,
   background: linear-gradient(135deg, #d97706, #78350f) !important;
   border-color: #f59e0b !important;
 }
+
+/* Start Screen Layout Columns */
+#startScreen {
+  display: flex;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 80px;
+}
+.startLeftPanel {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  z-index: 105;
+}
+.startCenterPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 105;
+}
+.startRightPanel {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 105;
+}
+
+/* Drum Picker Wheel Styles */
+.arcadeWheel {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.65);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), inset 0 2px 8px rgba(255, 255, 255, 0.05);
+}
+.wheelLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.12em;
+  font-weight: 900;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.wheelViewport {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.wheelBtn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.15s;
+  user-select: none;
+}
+.wheelBtn:hover {
+  color: #fff;
+}
+.wheelTrack {
+  width: 100%;
+  height: 90px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.wheelItem {
+  height: 30px;
+  line-height: 30px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  border-radius: 4px;
+  user-select: none;
+}
+.wheelItem:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+.wheelItem.active {
+  font-size: 14px;
+  font-weight: 900;
+  transform: scale(1.1);
+}
+#startScreen.denshi .wheelItem.active {
+  color: var(--goldB);
+  text-shadow: 0 0 8px var(--gold);
+  background: rgba(212, 168, 67, 0.15);
+  border: 1px solid var(--gold);
+}
+#startScreen.tiankai .wheelItem.active {
+  color: var(--neonP);
+  text-shadow: 0 0 8px var(--neonP);
+  background: rgba(255, 45, 117, 0.15);
+  border: 1px solid var(--neonP);
+}
+
+/* Neon Readme Button */
+.neonReadmeBtn {
+  background: transparent;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  width: 140px;
+  height: 140px;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: 
+    0 0 10px #fff,
+    0 0 20px var(--neonP),
+    0 0 40px var(--neonP),
+    inset 0 0 10px #fff,
+    inset 0 0 20px var(--neonP);
+  border-color: #ff9cc2;
+  animation: neonPulse 2s alternate infinite ease-in-out;
+}
+.neonReadmeBtn:hover {
+  transform: scale(1.08) rotate(5deg);
+  box-shadow: 
+    0 0 15px #fff,
+    0 0 35px var(--neonP),
+    0 0 70px var(--neonP),
+    inset 0 0 15px #fff,
+    inset 0 0 30px var(--neonP);
+}
+.neonReadmeBtn:active {
+  transform: scale(0.95);
+}
+.neonReadmeBtn .neonText {
+  color: #fff;
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.3;
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-shadow: 
+    0 0 5px #fff,
+    0 0 10px var(--neonP),
+    0 0 20px var(--neonP);
+}
+
+@keyframes neonPulse {
+  0% {
+    opacity: 0.9;
+    box-shadow: 
+      0 0 8px #fff,
+      0 0 15px var(--neonP),
+      0 0 30px var(--neonP),
+      inset 0 0 8px #fff,
+      inset 0 0 15px var(--neonP);
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 
+      0 0 12px #fff,
+      0 0 25px var(--neonP),
+      0 0 50px var(--neonP),
+      inset 0 0 12px #fff,
+      inset 0 0 25px var(--neonP);
+  }
+}
+
+@media (max-width: 1000px) {
+  #startScreen {
+    flex-direction: column !important;
+    padding: 20px;
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+  .startLeftPanel, .startRightPanel {
+    width: 100%;
+    margin-top: 20px;
+  }
+}
+
+/* Read Me Page Retro Styles */
+.readmeLayout {
+  min-height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle at center, #1b0a24 0%, #08030b 100%);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.readmeScanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.readmeContainer {
+  width: 100%;
+  max-width: 800px;
+  background: rgba(10, 5, 15, 0.85);
+  border: 3px solid var(--neonP);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 
+    0 0 20px rgba(255, 45, 117, 0.3),
+    inset 0 0 15px rgba(255, 45, 117, 0.15);
+  z-index: 10;
+  position: relative;
+  backdrop-filter: blur(8px);
+}
+
+.readmeHeader {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.readmeTitle {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 
+    0 0 5px #fff,
+    0 0 15px var(--neonP),
+    0 0 30px var(--neonP);
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.readmeSubtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.2em;
+  margin-top: 10px;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+.readmeDecoLine {
+  width: 100%;
+  height: 2px;
+  margin-top: 20px;
+  background: linear-gradient(90deg, transparent, var(--neonP), transparent);
+}
+
+.readmeContent {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 15px;
+  margin-bottom: 30px;
+}
+
+/* Custom Scrollbar for Readme Content */
+.readmeContent::-webkit-scrollbar {
+  width: 6px;
+}
+.readmeContent::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+.readmeContent::-webkit-scrollbar-thumb {
+  background: var(--neonP);
+  border-radius: 10px;
+  box-shadow: 0 0 10px var(--neonP);
+}
+
+.readmeSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionHeading {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--goldB);
+  text-shadow: 0 0 8px var(--gold);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.sectionText {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  text-align: justify;
+}
+
+.featureList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.featureList li {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  position: relative;
+  padding-left: 20px;
+}
+
+.featureList li::before {
+  content: '⚡';
+  position: absolute;
+  left: 0;
+  top: 1px;
+  color: var(--neonP);
+  text-shadow: 0 0 5px var(--neonP);
+}
+
+.readmeFooter {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.readmeBackBtn {
+  background: linear-gradient(180deg, #ecc040, #c49020);
+  border: 2px solid #fff;
+  border-radius: 30px;
+  padding: 12px 32px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 
+    0 4px 0 #8c6a28,
+    0 8px 16px rgba(0, 0, 0, 0.5);
+}
+.readmeBackBtn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 0 #8c6a28,
+    0 10px 20px rgba(0, 0, 0, 0.6);
+}
+.readmeBackBtn:active {
+  transform: translateY(4px);
+  box-shadow: 
+    0 2px 0 #8c6a28,
+    0 4px 8px rgba(0, 0, 0, 0.4);
+}
+.readmeBackBtn span {
+  color: #000;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+

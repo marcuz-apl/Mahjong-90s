@@ -1299,6 +1299,24 @@ export default function GamePage() {
     localStorage.setItem('street_mahjong_tile_back', color);
   };
 
+  const handleDifficultyCycle = (direction) => {
+    const diffs = ['easy', 'normal', 'hard'];
+    const idx = diffs.indexOf(difficulty);
+    let nextIdx = idx + direction;
+    if (nextIdx < 0) nextIdx = diffs.length - 1;
+    if (nextIdx >= diffs.length) nextIdx = 0;
+    handleDifficultyChange(diffs[nextIdx]);
+  };
+
+  const handleTileBackCycle = (direction) => {
+    const colors = ['green', 'blue', 'yellow'];
+    const idx = colors.indexOf(tileBackColor);
+    let nextIdx = idx + direction;
+    if (nextIdx < 0) nextIdx = colors.length - 1;
+    if (nextIdx >= colors.length) nextIdx = 0;
+    handleTileBackChange(colors[nextIdx]);
+  };
+
   const handleLoginPlay = async (e) => {
     if (e && typeof e.preventDefault === 'function') e.preventDefault();
     setLoginError('');
@@ -1499,110 +1517,122 @@ export default function GamePage() {
       {/* START SCREEN */}
       {screenState === 'start' && (
         <div id="startScreen" className={gameMode}>
-          <div className="titleMain">街機麻雀</div>
-          <div className="titleSub">ARCADE MAHJONG</div>
-          <div className="decoLine"></div>
-          
-          <div 
-            className={`portalModeBadge ${gameMode}`}
-            onClick={() => setGameMode(gameMode === 'tiankai' ? 'denshi' : 'tiankai')}
-          >
-            模式: {gameMode === 'tiankai' ? '天開眼 (透視)' : '電子基盤 (經典)'}
-          </div>
-
-          <div className="diffContainer">
-            <span className="diffLabel">選擇難度 / DIFFICULTY</span>
-            <div className="diffButtons">
-              <button 
-                className={`diffBtn dfEasy ${difficulty === 'easy' ? 'active' : ''}`}
-                onClick={() => handleDifficultyChange('easy')}
-              >
-                簡單 EASY
-              </button>
-              <button 
-                className={`diffBtn dfNormal ${difficulty === 'normal' ? 'active' : ''}`}
-                onClick={() => handleDifficultyChange('normal')}
-              >
-                普通 NORMAL
-              </button>
-              <button 
-                className={`diffBtn dfHard ${difficulty === 'hard' ? 'active' : ''}`}
-                onClick={() => handleDifficultyChange('hard')}
-              >
-                困難 HARD
-              </button>
-            </div>
-          </div>
-
-          <div className="diffContainer" style={{ marginTop: '15px' }}>
-            <span className="diffLabel">選擇牌背顏色 / TILE BACK COLOR</span>
-            <div className="diffButtons">
-              <button 
-                className={`diffBtn tbGreen ${tileBackColor === 'green' ? 'active' : ''}`}
-                onClick={() => handleTileBackChange('green')}
-              >
-                經典綠 GREEN
-              </button>
-              <button 
-                className={`diffBtn tbBlue ${tileBackColor === 'blue' ? 'active' : ''}`}
-                onClick={() => handleTileBackChange('blue')}
-              >
-                復古藍 BLUE
-              </button>
-              <button 
-                className={`diffBtn tbYellow ${tileBackColor === 'yellow' ? 'active' : ''}`}
-                onClick={() => handleTileBackChange('yellow')}
-              >
-                金黃色 YELLOW
-              </button>
-            </div>
-          </div>
-
-          <div className="loginContainer">
-            <form onSubmit={handleLoginPlay} className="loginForm">
-              <input 
-                type="text" 
-                className="loginInput" 
-                placeholder="輸入用戶名 (2-12字元)..."
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={coinBtnDisabled}
-              />
-              
-              <div className="startActions">
-                <button 
-                  type="submit"
-                  className="startBtn loginBtn" 
-                  disabled={coinBtnDisabled}
-                >
-                  登入並記錄
-                </button>
-                <button 
-                  type="button"
-                  className="startBtn guestBtn" 
-                  onClick={handleGuestPlay}
-                  disabled={coinBtnDisabled}
-                >
-                  訪客試玩
-                </button>
+          {/* Left Panel: Selection Wheels */}
+          <div className="startLeftPanel">
+            {/* Difficulty Wheel */}
+            <div className="arcadeWheel">
+              <span className="wheelLabel">選擇難度 / DIFFICULTY</span>
+              <div className="wheelViewport">
+                <button type="button" className="wheelBtn btnUp" onClick={() => handleDifficultyCycle(-1)}>▲</button>
+                <div className="wheelTrack">
+                  {['easy', 'normal', 'hard'].map((d) => {
+                    const isActive = difficulty === d;
+                    const labels = { easy: '簡單 EASY', normal: '普通 NORMAL', hard: '困難 HARD' };
+                    return (
+                      <div 
+                        key={d} 
+                        className={`wheelItem ${isActive ? 'active' : ''}`}
+                        onClick={() => handleDifficultyChange(d)}
+                      >
+                        {labels[d]}
+                      </div>
+                    );
+                  })}
+                </div>
+                <button type="button" className="wheelBtn btnDown" onClick={() => handleDifficultyCycle(1)}>▼</button>
               </div>
-            </form>
-            
-            <button 
-              type="button"
-              className="startBtn lobbyBackBtn" 
-              onClick={() => setScreenState('portal')}
-              disabled={coinBtnDisabled}
-              style={{ width: '100%', marginTop: '10px' }}
-            >
-              返回大堂
-            </button>
-
-            {loginError && <div className="loginError">{loginError}</div>}
-
-            <div className="adminEntranceLink">
-              <Link href="/admin">⚙️ 值班經理專區</Link>
             </div>
+
+            {/* Tile Back Color Wheel */}
+            <div className="arcadeWheel" style={{ marginTop: '20px' }}>
+              <span className="wheelLabel">牌背顏色 / TILE BACK</span>
+              <div className="wheelViewport">
+                <button type="button" className="wheelBtn btnUp" onClick={() => handleTileBackCycle(-1)}>▲</button>
+                <div className="wheelTrack">
+                  {['green', 'blue', 'yellow'].map((c) => {
+                    const isActive = tileBackColor === c;
+                    const labels = { green: '經典綠 GREEN', blue: '復古藍 BLUE', yellow: '金黃色 YELLOW' };
+                    return (
+                      <div 
+                        key={c} 
+                        className={`wheelItem ${isActive ? 'active' : ''}`}
+                        onClick={() => handleTileBackChange(c)}
+                      >
+                        {labels[c]}
+                      </div>
+                    );
+                  })}
+                </div>
+                <button type="button" className="wheelBtn btnDown" onClick={() => handleTileBackCycle(1)}>▼</button>
+              </div>
+            </div>
+          </div>
+
+          {/* Center Panel: Main Start Layout */}
+          <div className="startCenterPanel">
+            <div className="titleMain">街機麻雀</div>
+            <div className="titleSub">ARCADE MAHJONG</div>
+            <div className="decoLine"></div>
+            
+            <div 
+              className={`portalModeBadge ${gameMode}`}
+              onClick={() => setGameMode(gameMode === 'tiankai' ? 'denshi' : 'tiankai')}
+            >
+              模式: {gameMode === 'tiankai' ? '天開眼 (透視)' : '電子基盤 (經典)'}
+            </div>
+
+            <div className="loginContainer">
+              <form onSubmit={handleLoginPlay} className="loginForm">
+                <input 
+                  type="text" 
+                  className="loginInput" 
+                  placeholder="輸入用戶名 (2-12字元)..."
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={coinBtnDisabled}
+                />
+                
+                <div className="startActions">
+                  <button 
+                    type="submit"
+                    className="startBtn loginBtn" 
+                    disabled={coinBtnDisabled}
+                  >
+                    登入並記錄
+                  </button>
+                  <button 
+                    type="button"
+                    className="startBtn guestBtn" 
+                    onClick={handleGuestPlay}
+                    disabled={coinBtnDisabled}
+                  >
+                    訪客試玩
+                  </button>
+                </div>
+              </form>
+              <button 
+                type="button" 
+                className="startBtn lobbyBackBtn" 
+                onClick={() => setScreenState('portal')}
+                disabled={coinBtnDisabled}
+                style={{ width: '100%', marginTop: '10px' }}
+              >
+                返回大堂
+              </button>
+
+              {loginError && <div className="loginError">{loginError}</div>}
+
+              <div className="adminEntranceLink">
+                <Link href="/admin">⚙️ 值班經理專區</Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Panel: Read Me Button */}
+          <div className="startRightPanel">
+            <Link href="/readme" className="neonReadmeBtn" style={{ textDecoration: 'none' }}>
+              <span className="neonText">讀我<br/>READ ME</span>
+            </Link>
           </div>
 
           <div id="loadStatus" className={loadStatusShow ? 'show' : ''}>
