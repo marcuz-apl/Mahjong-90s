@@ -894,15 +894,6 @@ export default function GamePage() {
     }
   };
 
-  const sortedDiscards = [];
-  discards.forEach((pDiscards, pIdx) => {
-    pDiscards.forEach((t, idx) => {
-      const isLast = pIdx === lastDiscP && idx === pDiscards.length - 1 && lastDisc !== null;
-      sortedDiscards.push({ t, isLast, pIdx, idx });
-    });
-  });
-  sortedDiscards.sort((a, b) => a.t - b.t);
-
   if (!mounted) return null;
 
   return (
@@ -1011,12 +1002,17 @@ export default function GamePage() {
             {/* Central Pool (牌河) */}
             <div id="aCenter">
               <div id="dPool">
-                {sortedDiscards.map((item, index) => (
-                  <div 
-                    key={index} 
-                    className={`tile tF szM ${item.isLast ? 'ld' : ''}`}
-                    dangerouslySetInnerHTML={{ __html: svgCache[item.t] || '' }}
-                  />
+                {discards.map((pDiscards, pIdx) => (
+                  pDiscards.map((t, idx) => {
+                    const isLast = pIdx === lastDiscP && idx === pDiscards.length - 1 && lastDisc !== null;
+                    return (
+                      <div 
+                        key={`${pIdx}-${idx}`} 
+                        className={`tile tF szM ${isLast ? 'ld' : ''}`}
+                        dangerouslySetInnerHTML={{ __html: svgCache[t] || '' }}
+                      />
+                    );
+                  })
                 ))}
               </div>
             </div>

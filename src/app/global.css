@@ -340,11 +340,21 @@ html,body{
   100%{transform:translateY(0)}
 }
 .ld{
-  animation:pD 1s infinite;
+  animation:pD 1s infinite, discPopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 @keyframes pD{
   0%,100%{box-shadow:0 0 8px var(--neonP),6px 6px 0 0 var(--tBot),7px 7px 10px rgba(0,0,0,.5)}
   50%{box-shadow:0 0 18px var(--neonP),6px 6px 0 0 var(--tBot),7px 7px 10px rgba(0,0,0,.5)}
+}
+@keyframes discPopIn {
+  0% {
+    transform: scale(0.3) translateY(-30px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
 }
 #actP{
   position:absolute;
