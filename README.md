@@ -1,5 +1,11 @@
 # Arcade Mahjong 90s (街機麻將 de 90s)
 
+## What is Mahjong
+    Julia Roberts is an avid [Mahjong](https://en.wikipedia.org/wiki/Mahjong) player who uses the tile-based game as a weekly ritual to relax, bond with friends, and find philosophical meaning. She views the game as a beautiful metaphor for life, famously stating, "The concept of it is to create order out of chaos based on random drawing of tiles." Check this out: [The Late Show with Stephen Colbert](https://www.youtube.com/watch?v=Wb_T0FS2IRs)
+
+
+----
+## Arcade Mahjong 90s - Simulator Game
 A modern, web-based recreation of the classic 1990s street arcade mahjong machines (based on electronic kiban/electronic boards like *Electronic Base* and *Daimangan* by Dynax, Capcom, and IGS).
 
 This game features the iconic dark red and gold cabinet visuals, golden neon glowing headings, custom 3D card tilt physics via Vanilla CSS, and computer AI players—fully modernized with local SVG rendering, next-generation responsive rendering, and local database persistence.
