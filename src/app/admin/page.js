@@ -172,7 +172,8 @@ export default function AdminPage() {
     ai_randomness_easy: '0.4',
     ai_randomness_normal: '0.15',
     ai_randomness_hard: '0.0',
-    tiankai_peek_type: 'limited'
+    tiankai_peek_type: 'limited',
+    big_hand_rate: '0.0'
   });
   
   const [settingsSuccess, setSettingsSuccess] = useState('');
@@ -664,7 +665,7 @@ export default function AdminPage() {
                 </div>
 
                 <div className="settingsSection">
-                  <h3 className="settingsSectionHeading">1.5 天開眼模式設定</h3>
+                  <h3 className="settingsSectionHeading">1.5 天開眼與作弊配牌設定</h3>
                   <div className="settingsGrid">
                     <div className="settingsField">
                       <label className="settingsLabel">
@@ -680,6 +681,22 @@ export default function AdminPage() {
                         <option value="global">全局透視 (全程展示對手手牌)</option>
                         <option value="limited">限時窺屏 (開局前 5 秒限時展示)</option>
                       </select>
+                    </div>
+                    <div className="settingsField">
+                      <label className="settingsLabel">
+                        作弊配牌大牌概率 (0.0 ~ 1.0)
+                        <span className="fieldHelp">起手發牌時獲得大三元、大四喜、國士無雙等大牌的機率 (0.0=正常發牌, 1.0=100%獲得大牌)</span>
+                      </label>
+                      <input 
+                        type="number" 
+                        step="0.05"
+                        min="0"
+                        max="1"
+                        className="settingsInput"
+                        value={settingsForm.big_hand_rate || '0.0'}
+                        onChange={(e) => handleSettingInputChange('big_hand_rate', e.target.value)}
+                        required
+                      />
                     </div>
                   </div>
                 </div>

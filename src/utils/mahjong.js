@@ -49,6 +49,19 @@ export function canWinRaw(tiles) {
   const c = new Array(34).fill(0);
   for (let i = 0; i < tiles.length; i++) c[tiles[i]]++;
   
+  // 國士無雙 / 十三幺 check (only for 14-card hands)
+  if (tiles.length === 14) {
+    const terminals = [0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33];
+    let ok = true;
+    for (const t of terminals) {
+      if (c[t] < 1) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) return true;
+  }
+  
   for (let t = 0; t < 34; t++) {
     if (c[t] >= 2) {
       c[t] -= 2;
@@ -128,6 +141,54 @@ export function calcHan(hand, melds, isTsumo, isHaidi) {
   }
   const c = new Array(34).fill(0);
   for (let i = 0; i < hand.length; i++) c[hand[i]]++;
+
+  // Build total count array including melds
+  const tot = new Array(34).fill(0);
+  for (let i = 0; i < hand.length; i++) tot[hand[i]]++;
+  for (let m = 0; m < melds.length; m++) {
+    for (let j = 0; j < melds[m].tiles.length; j++) {
+      tot[melds[m].tiles[j]]++;
+    }
+  }
+
+  // 大三元 check
+  if (tot[31] >= 3 && tot[32] >= 3 && tot[33] >= 3) {
+    han += 13;
+    yaku.push('大三元');
+  }
+
+  // 大四喜 check
+  if (tot[27] >= 3 && tot[28] >= 3 && tot[29] >= 3 && tot[30] >= 3) {
+    han += 13;
+    yaku.push('大四喜');
+  }
+
+  // 國士無雙 / 十三幺 check
+  if (hand.length === 14 && melds.length === 0) {
+    const terminals = [0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33];
+    let isGuoshi = true;
+    for (const t of terminals) {
+      if (c[t] < 1) {
+        isGuoshi = false;
+        break;
+      }
+    }
+    if (isGuoshi) {
+      han += 13;
+      yaku.push('國士無雙');
+    }
+  }
+
+  // 九連寶燈 check
+  if (hand.length === 14 && melds.length === 0) {
+    for (let s = 0; s < 3; s++) {
+      const O = s * 9;
+      if (c[O] >= 3 && c[O+1] >= 1 && c[O+2] >= 1 && c[O+3] >= 1 && c[O+4] >= 1 && c[O+5] >= 1 && c[O+6] >= 1 && c[O+7] >= 1 && c[O+8] >= 3) {
+        han += 13;
+        yaku.push('九連寶燈');
+      }
+    }
+  }
   
   // 断幺九 check
   let allMid = true;

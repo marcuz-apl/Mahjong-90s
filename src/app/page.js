@@ -304,7 +304,8 @@ export default function GamePage() {
     ai_randomness_easy: '0.4',
     ai_randomness_normal: '0.15',
     ai_randomness_hard: '0.0',
-    tiankai_peek_type: 'limited'
+    tiankai_peek_type: 'limited',
+    big_hand_rate: '0.0'
   });
 
   // Synchronize async gameRef state to React states
@@ -444,11 +445,102 @@ export default function GamePage() {
     g.newTileIdx = -1;
     g.selIdx = -1;
 
-    for (let p = 0; p < 4; p++) {
-      for (let i = 0; i < 13; i++) {
-        g.hands[p].push(g.wall.pop());
+    // Load big hand rate from settings
+    const bigHandRate = parseFloat(settingsRef.current.big_hand_rate || '0.0');
+    let useRigged = false;
+    if (Math.random() < bigHandRate) {
+      useRigged = true;
+    }
+
+    if (useRigged) {
+      // Generate one of the big hands randomly
+      const types = ['dasixi', 'dasanyuan', 'guoshi', 'jiulian', 'qingyise', 'qidui'];
+      const chosen = types[Math.floor(Math.random() * types.length)];
+      let riggedHand = [];
+
+      if (chosen === 'dasixi') {
+        // 大四喜: 3 of each wind + 1 random terminal/honor
+        riggedHand = [27, 27, 27, 28, 28, 28, 29, 29, 29, 30, 30, 30, 31];
+      } else if (chosen === 'dasanyuan') {
+        // 大三元: 3 of each dragon + 4 random numbers
+        riggedHand = [31, 31, 31, 32, 32, 32, 33, 33, 33, 0, 1, 2, 3];
+      } else if (chosen === 'guoshi') {
+        // 國士無雙 / 十三幺: 13 unique terminals/honors
+        riggedHand = [0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33];
+      } else if (chosen === 'jiulian') {
+        // 九連寶燈: 111, 2,3,4,5,6,7,8, 999 of a random suit
+        const suit = Math.floor(Math.random() * 3);
+        const O = suit * 9;
+        riggedHand = [O, O, O, O+1, O+2, O+3, O+4, O+5, O+6, O+7, O+8, O+8, O+8];
+      } else if (chosen === 'qingyise') {
+        // 清一色: 13 cards of the same suit
+        const suit = Math.floor(Math.random() * 3);
+        const O = suit * 9;
+        for (let i = 0; i < 13; i++) {
+          riggedHand.push(O + Math.floor(Math.random() * 9));
+        }
+      } else {
+        // 七對子: 6 pairs + 1 single
+        const pool = [];
+        for (let t = 0; t < 34; t++) pool.push(t);
+        for (let i = pool.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+        riggedHand = [pool[0], pool[0], pool[1], pool[1], pool[2], pool[2], pool[3], pool[3], pool[4], pool[4], pool[5], pool[5], pool[6]];
       }
-      sortH(p);
+
+      // Clamp counts to at most 4 copies of any tile
+      const counts = {};
+      for (let i = 0; i < riggedHand.length; i++) {
+        const val = riggedHand[i];
+        counts[val] = (counts[val] || 0) + 1;
+        if (counts[val] > 4) {
+          let fallback;
+          if (chosen === 'qingyise' || chosen === 'jiulian') {
+            const suit = Math.floor(val / 9);
+            const O = suit * 9;
+            fallback = O;
+            while ((counts[fallback] || 0) >= 4) {
+              fallback++;
+            }
+          } else {
+            fallback = 0;
+            while ((counts[fallback] || 0) >= 4) {
+              fallback++;
+            }
+          }
+          riggedHand[i] = fallback;
+          counts[fallback] = (counts[fallback] || 0) + 1;
+        }
+      }
+
+      // Remove rigged hand tiles from the wall
+      for (const t of riggedHand) {
+        const idx = g.wall.indexOf(t);
+        if (idx !== -1) {
+          g.wall.splice(idx, 1);
+        }
+      }
+
+      g.hands[0] = riggedHand;
+      sortH(0);
+
+      // Deal to opponents
+      for (let p = 1; p < 4; p++) {
+        for (let i = 0; i < 13; i++) {
+          g.hands[p].push(g.wall.pop());
+        }
+        sortH(p);
+      }
+    } else {
+      // Normal deal
+      for (let p = 0; p < 4; p++) {
+        for (let i = 0; i < 13; i++) {
+          g.hands[p].push(g.wall.pop());
+        }
+        sortH(p);
+      }
     }
   };
 
