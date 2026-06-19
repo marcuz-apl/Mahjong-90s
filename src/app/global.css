@@ -108,7 +108,7 @@ html,body{
 .coinLabel{
   margin-top:18px;
   font-size:11px;
-  color:#554;
+  color:rgba(255, 255, 255, 0.4);
   letter-spacing:.2em;
 }
 #loadStatus{
@@ -250,8 +250,8 @@ html,body{
 }
 .pL{
   font-size:10px;
-  color:var(--gold);
-  opacity:.6;
+  color:var(--goldB);
+  opacity:.9;
   letter-spacing:.06em;
   margin-bottom:2px;
 }
@@ -261,11 +261,10 @@ html,body{
 }
 #keyH{
   font-size:10px;
-  color:#664;
+  color:rgba(255, 255, 255, 0.45);
   margin-top:2px;
   letter-spacing:.04em;
   text-align:center;
-  opacity:.7;
 }
 .tile{
   border-radius:5px;

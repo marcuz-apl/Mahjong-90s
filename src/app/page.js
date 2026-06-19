@@ -126,9 +126,15 @@ export default function GamePage() {
   }, []);
 
   // --- Preload and Clean local SVGs ---
-  const cleanSvg = (txt) => {
+  const cleanSvg = (txt, fid) => {
     // Remove XML declarations
     txt = txt.replace(/<\?xml[^?]*\?>/g, '');
+    
+    // Prefix class names to prevent global CSS collisions
+    const classPrefix = `t-${fid}-`;
+    txt = txt.replace(/\.cls-/g, `.${classPrefix}cls-`);
+    txt = txt.replace(/class="cls-/g, `class="${classPrefix}cls-`);
+
     // Replace solid white backgrounds and flat borders with transparent styles
     txt = txt.replace(/#f5f6f7/gi, 'transparent');
     txt = txt.replace(/#93989c/gi, 'transparent');
@@ -147,7 +153,7 @@ export default function GamePage() {
         const resp = await fetch(`/vectors/SVG/${fid}.svg`);
         if (resp.ok) {
           const txt = await resp.text();
-          cache[i] = cleanSvg(txt);
+          cache[i] = cleanSvg(txt, fid);
           loaded++;
           setSvgLoadedCount(loaded);
           setLoadStatusText(`加載本地矢量圖 ${loaded}/34`);
