@@ -1222,7 +1222,7 @@ export default function GamePage() {
             </button>
             */}
             <div className="adminEntranceLink">
-              <Link href="/admin">⚙️ 進入管理後台</Link>
+              <Link href="/admin">⚙️ 值班經理專區</Link>
             </div>
           </div>
 
