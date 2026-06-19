@@ -278,12 +278,44 @@ html,body{
   color:var(--neonG);
   font-family:monospace;
 }
-#keyH{
-  font-size:10px;
-  color:rgba(255, 255, 255, 0.45);
-  margin-top:2px;
-  letter-spacing:.04em;
-  text-align:center;
+#keyH {
+  font-size: 13px;
+  color: #e2e8f0;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  letter-spacing: .05em;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.keyHintItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 700;
+}
+
+.keyCap {
+  background: linear-gradient(180deg, #334155, #1e293b);
+  border: 1px solid #64748b;
+  border-radius: 4px;
+  color: #00ffff; /* vibrant arcade cyan */
+  padding: 2px 6px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 900;
+  box-shadow: 0 2px 0 0 #0f172a, 0 1px 3px rgba(0,0,0,0.5);
+  font-size: 11px;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.6);
+}
+
+.keyDivider {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 12px;
 }
 .tile{
   border-radius:5px;

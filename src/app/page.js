@@ -1583,7 +1583,23 @@ export default function GamePage() {
               })}
             </div>
 
-            <div id="keyH">←→ 選牌 | Enter 出牌 | H 胡 | P 碰 | K 槓 | C 吃 | 空格 跳過 | Q 退出</div>
+            <div id="keyH">
+              <div className="keyHintItem"><span className="keyCap">←→</span> 選牌</div>
+              <div className="keyDivider">|</div>
+              <div className="keyHintItem"><span className="keyCap">Enter</span> 出牌</div>
+              <div className="keyDivider">|</div>
+              <div className="keyHintItem"><span className="keyCap">H</span> 胡</div>
+              <div className="keyDivider">|</div>
+              <div className="keyHintItem"><span className="keyCap">P</span> 碰</div>
+              <div className="keyDivider">|</div>
+              <div className="keyHintItem"><span className="keyCap">K</span> 槓</div>
+              <div className="keyDivider">|</div>
+              <div className="keyHintItem"><span className="keyCap">C</span> 吃</div>
+              <div className="keyDivider">|</div>
+              <div className="keyHintItem"><span className="keyCap">Space</span> 跳過</div>
+              <div className="keyDivider">|</div>
+              <div className="keyHintItem"><span className="keyCap">Q</span> 退出</div>
+            </div>
           </div>
         </div>
 
