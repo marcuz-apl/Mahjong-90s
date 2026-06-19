@@ -1,6 +1,7 @@
 node_modules/
 .next/
 dist/
-data/
+data/*
+!data/mahjong-90s.db
 .DS_Store
 *.log
