@@ -304,7 +304,7 @@ export default function GamePage() {
     ai_randomness_easy: '0.4',
     ai_randomness_normal: '0.15',
     ai_randomness_hard: '0.0',
-    tiankai_peek_type: 'global'
+    tiankai_peek_type: 'limited'
   });
 
   // Synchronize async gameRef state to React states
@@ -934,7 +934,7 @@ export default function GamePage() {
 
     while (g.running) {
       if (g.wall.length === 0 && !skipDraw) {
-        if (g.gameMode === 'denshi') {
+        if (g.gameMode === 'denshi' || g.gameMode === 'tiankai') {
           const waiting = getWaitingTiles(g.hands[0]);
           if (waiting.length > 0) {
             const winTile = await startHaidiChance(waiting);
@@ -1015,7 +1015,7 @@ export default function GamePage() {
     setTiankaiPeekActive(false);
 
     if (g.gameMode === 'tiankai') {
-      const peekType = settingsRef.current.tiankai_peek_type || 'global';
+      const peekType = settingsRef.current.tiankai_peek_type || 'limited';
       if (peekType === 'limited') {
         setTiankaiPeekActive(true);
         tiankaiTimerRef.current = setTimeout(() => {
@@ -1125,6 +1125,23 @@ export default function GamePage() {
       }
     }
     return waiting;
+  };
+
+  const isTenpai = (hand) => {
+    if (!hand || hand.length === 0) return false;
+    if (hand.length % 3 === 1) {
+      return getWaitingTiles(hand).length > 0;
+    }
+    if (hand.length % 3 === 2) {
+      for (let i = 0; i < hand.length; i++) {
+        const nextHand = [...hand];
+        nextHand.splice(i, 1);
+        if (getWaitingTiles(nextHand).length > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
   };
 
   const startHaidiChance = (waiting) => {
@@ -1521,7 +1538,7 @@ export default function GamePage() {
             <span className="pL">對家 <span>({hands[2]?.length || 0})</span></span>
             <div style={{ display: 'flex', gap: '2px' }}>
               {hands[2]?.map((t, i) => (
-                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'global') === 'global') ? (
+                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'limited') === 'global' || isTenpai(hands[0])) ? (
                   <div 
                     key={i} 
                     className="tile tF szN" 
@@ -1539,7 +1556,7 @@ export default function GamePage() {
             <div id="aLeft">
               <span className="pL">左家 <span>({hands[1]?.length || 0})</span></span>
               {hands[1]?.slice(0, 14).map((t, i) => (
-                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'global') === 'global') ? (
+                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'limited') === 'global' || isTenpai(hands[0])) ? (
                   <div 
                     key={i} 
                     className="tile tF szN" 
@@ -1571,7 +1588,7 @@ export default function GamePage() {
             <div id="aRight">
               <span className="pL">右家 <span>({hands[3]?.length || 0})</span></span>
               {hands[3]?.slice(0, 14).map((t, i) => (
-                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'global') === 'global') ? (
+                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'limited') === 'global' || isTenpai(hands[0])) ? (
                   <div 
                     key={i} 
                     className="tile tF szN" 

@@ -172,7 +172,7 @@ export default function AdminPage() {
     ai_randomness_easy: '0.4',
     ai_randomness_normal: '0.15',
     ai_randomness_hard: '0.0',
-    tiankai_peek_type: 'global'
+    tiankai_peek_type: 'limited'
   });
   
   const [settingsSuccess, setSettingsSuccess] = useState('');
@@ -631,7 +631,7 @@ export default function AdminPage() {
                       </label>
                       <select 
                         className="settingsInput"
-                        value={settingsForm.tiankai_peek_type || 'global'}
+                        value={settingsForm.tiankai_peek_type || 'limited'}
                         onChange={(e) => handleSettingInputChange('tiankai_peek_type', e.target.value)}
                         style={{ height: '40px', background: '#000', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', padding: '0 10px' }}
                       >
