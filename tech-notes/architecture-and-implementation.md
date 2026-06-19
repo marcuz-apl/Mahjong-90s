@@ -120,17 +120,6 @@ At runtime, the browser preloads vector files from `/vectors/SVG/`. To align wit
 
 ## 6. Key Optimization Plan, Workarounds & Custom Features
 
-### React Hydration Mismatch Workarounds
-During SSR and hydration steps, React warns if the server-rendered markup differs from the client-rendered DOM. We resolved this through three techniques:
-1. **Deferred Client Rendering**: Added a `mounted` state in `page.js`. We perform `if (!mounted) return null;` at the top of the render layout. This prevents the server from outputting components that rely on local storage or dynamic client state.
-2. **Standard font loading**: Manual Google Fonts `<link>` tags in the root layout were replaced with Next.js's native `next/font/google` asset pre-loader (`Noto_Sans_SC`), eliminating server-client font headers mismatches.
-3. **Attribute warning suppression**: Added `suppressHydrationWarning` to the `<html>` and `<body>` tags in `layout.js` to prevent validation failures caused by browser translation engines or style-injecting extensions.
-
-### Next.js Dev Badge Suppression Workaround
-The floating Next.js 15 dev routing badge ("Big N" logo) in local environments was hidden through two layers of suppression:
-1. **Configuration Overrides**: Configured `devIndicators: false` in `next.config.js` to disable routing and compilation overlays.
-2. **CSS Pointer Overrides**: Added strict selectors (`nextjs-portal`, `#nextjs-portal`, `next-route-announcer`, `#nextjs-router-announcer`, `[data-nextjs-toast-wrapper]`, `.nextjs-static-indicator`) set to `display: none !important` at the end of `global.css` as a bulletproof styling layer.
-
 ### Game Difficulty Level Tuning Heuristic
 The AI's playing strength is controlled by three settings:
 - **Easy (簡單)**: AI has a 40% chance to discard a completely random tile instead of the worst heuristic tile. Probability to Pon/Kan drops to 10%, and Chi probability drops to 20%.
