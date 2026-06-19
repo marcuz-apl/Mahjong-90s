@@ -102,7 +102,8 @@ export default function GamePage() {
   const [waitDisc, setWaitDisc] = useState(false);
 
   // UI state
-  const [showStartScreen, setShowStartScreen] = useState(true);
+  const [screenState, setScreenState] = useState('portal'); // 'portal' | 'start' | 'game'
+  const [gameMode, setGameMode] = useState('denshi'); // 'denshi' | 'tiankai'
   const [loadStatusText, setLoadStatusText] = useState('');
   const [loadStatusShow, setLoadStatusShow] = useState(false);
   const [coinBtnDisabled, setCoinBtnDisabled] = useState(false);
@@ -156,7 +157,7 @@ export default function GamePage() {
   const gameLoopRef = useRef(null);
   const handleQuitRef = useRef(null);
   const showStartScreenRef = useRef(true);
-  showStartScreenRef.current = showStartScreen;
+  showStartScreenRef.current = (screenState !== 'game');
   const actionPanelOptionsRef = useRef([]);
   actionPanelOptionsRef.current = actionPanelOptions;
   const settingsRef = useRef({
@@ -983,7 +984,7 @@ export default function GamePage() {
         localStorage.setItem('street_mahjong_user_id', trimmed);
 
         const loaded = await preloadAssets();
-        setShowStartScreen(false);
+        setScreenState('game');
         startGame();
       } else {
         const data = await res.json();
@@ -1018,7 +1019,7 @@ export default function GamePage() {
     setIsGuest(true);
 
     const loaded = await preloadAssets();
-    setShowStartScreen(false);
+    setScreenState('game');
     startGame();
   };
 
@@ -1043,7 +1044,7 @@ export default function GamePage() {
     g.lastDiscP = -1;
     g.discardHistory = [];
 
-    setShowStartScreen(true);
+    setScreenState('portal');
     setCoinBtnDisabled(false);
     setActionPanelOptions([]);
     setResultScreenActive(false);
@@ -1082,13 +1083,82 @@ export default function GamePage() {
 
   return (
     <div id="app">
+      {/* LOBBY PORTAL COVER SCREEN */}
+      {screenState === 'portal' && (
+        <div id="portalScreen">
+          <div className="crtScanlines" />
+          <div className="crtVignette" />
+          
+          {/* Scattered Multilingual Texts */}
+          <span className="portalDecorText decorTC">街機麻雀遊戲廳</span>
+          <span className="portalDecorText decorEN">Arcade Mahjong Arena</span>
+          <span className="portalDecorText decorJA1">アーケード麻雀ゲームセンター</span>
+          <span className="portalDecorText decorJA2">対戦脱衣麻雀ゲーム</span>
+          
+          <div className="portalHeader">
+            <h1 className="portalMainTitle">大滿貫</h1>
+            <div className="portalSubTitle">ARCADE MAHJONG</div>
+          </div>
+          
+          <div className="portalEntranceContainer">
+            {/* Left Cabinet: Denshi Kiban */}
+            <div 
+              className="portalCabinet denshiCab"
+              onClick={() => {
+                setGameMode('denshi');
+                setScreenState('start');
+              }}
+            >
+              <div className="cabTitle">電子基盤</div>
+              <div className="cabScreen">
+                <div className="cabScreenGlow" />
+                <div style={{ fontSize: '48px' }}>🀄</div>
+              </div>
+              <div className="cabDesc">
+                經典街機麻將規則<br />
+                考驗您的真實牌技！
+              </div>
+              <div className="cabCoinSlot" />
+            </div>
+            
+            {/* Right Cabinet: Tian Kai Yan */}
+            <div 
+              className="portalCabinet tiankaiCab"
+              onClick={() => {
+                setGameMode('tiankai');
+                setScreenState('start');
+              }}
+            >
+              <div className="cabTitle">天開眼</div>
+              <div className="cabScreen">
+                <div className="cabScreenGlow" />
+                <div style={{ fontSize: '48px' }}>👁️</div>
+              </div>
+              <div className="cabDesc">
+                透視模式天開眼<br />
+                電腦手牌一目了然！
+              </div>
+              <div className="cabCoinSlot" />
+            </div>
+          </div>
+          
+          <div className="portalFooter">
+            © 1990 DYNAX / NICHIBUTSU STYLE AMUSEMENT
+          </div>
+        </div>
+      )}
+
       {/* START SCREEN */}
-      {showStartScreen && (
+      {screenState === 'start' && (
         <div id="startScreen">
           <div className="titleMain">大滿貫</div>
           <div className="titleSub">ARCADE MAHJONG</div>
           <div className="decoLine"></div>
           
+          <div className={`portalModeBadge ${gameMode}`}>
+            模式: {gameMode === 'tiankai' ? '天開眼 (透視)' : '電子基盤 (經典)'}
+          </div>
+
           <div className="diffContainer">
             <span className="diffLabel">選擇難度 / DIFFICULTY</span>
             <div className="diffButtons">
@@ -1142,6 +1212,17 @@ export default function GamePage() {
                 </button>
               </div>
             </form>
+            
+            <button 
+              type="button"
+              className="startBtn lobbyBackBtn" 
+              onClick={() => setScreenState('portal')}
+              disabled={coinBtnDisabled}
+              style={{ width: '100%', marginTop: '10px' }}
+            >
+              返回大堂
+            </button>
+
             {loginError && <div className="loginError">{loginError}</div>}
             {/* Temporarily hidden Denshi Kiban Seabed Win Demo button
             <button 
@@ -1165,8 +1246,11 @@ export default function GamePage() {
       )}
 
       {/* GAME SCREEN */}
-      <div id="gameScreen" className={!showStartScreen ? 'active' : ''}>
+      <div id="gameScreen" className={screenState === 'game' ? 'active' : ''}>
         <div id="topBar">
+          <span className={`topBarModeBadge ${gameMode}`}>
+            {gameMode === 'tiankai' ? '天開眼' : '電子基盤'}
+          </span>
           <span className="bI">玩家: <span className="bPlayerName">{isGuest ? '訪客' : username}</span></span>
           <span className="bI">籌碼 <span className="bS" id="elS">{score}</span></span>
           <span className="bI bR" id="elR">第 {round} 局</span>
@@ -1182,8 +1266,16 @@ export default function GamePage() {
           <div id="aTop">
             <span className="pL">對家 <span>({hands[2]?.length || 0})</span></span>
             <div style={{ display: 'flex', gap: '2px' }}>
-              {hands[2]?.map((_, i) => (
-                <div key={i} className="tile tB szN" />
+              {hands[2]?.map((t, i) => (
+                gameMode === 'tiankai' ? (
+                  <div 
+                    key={i} 
+                    className="tile tF szN" 
+                    dangerouslySetInnerHTML={{ __html: svgCache[t] || '' }}
+                  />
+                ) : (
+                  <div key={i} className="tile tB szN" />
+                )
               ))}
             </div>
           </div>
@@ -1192,8 +1284,16 @@ export default function GamePage() {
             {/* Left Player (左家) */}
             <div id="aLeft">
               <span className="pL">左家 <span>({hands[1]?.length || 0})</span></span>
-              {hands[1]?.slice(0, 14).map((_, i) => (
-                <div key={i} className="tile tB szN" />
+              {hands[1]?.slice(0, 14).map((t, i) => (
+                gameMode === 'tiankai' ? (
+                  <div 
+                    key={i} 
+                    className="tile tF szN" 
+                    dangerouslySetInnerHTML={{ __html: svgCache[t] || '' }}
+                  />
+                ) : (
+                  <div key={i} className="tile tB szN" />
+                )
               ))}
             </div>
 
@@ -1216,8 +1316,16 @@ export default function GamePage() {
             {/* Right Player (右家) */}
             <div id="aRight">
               <span className="pL">右家 <span>({hands[3]?.length || 0})</span></span>
-              {hands[3]?.slice(0, 14).map((_, i) => (
-                <div key={i} className="tile tB szN" />
+              {hands[3]?.slice(0, 14).map((t, i) => (
+                gameMode === 'tiankai' ? (
+                  <div 
+                    key={i} 
+                    className="tile tF szN" 
+                    dangerouslySetInnerHTML={{ __html: svgCache[t] || '' }}
+                  />
+                ) : (
+                  <div key={i} className="tile tB szN" />
+                )
               ))}
             </div>
           </div>
