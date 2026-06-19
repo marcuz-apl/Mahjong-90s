@@ -143,18 +143,19 @@ To save processing overhead and limit database sizes, we separated play paths:
 - **Guest Mode**: Guest players bypass server-side endpoints entirely. Progress is saved locally in the browser's `localStorage` (`street_mahjong_guest_chips`), removing database query load.
 
 ### Discard Entrance & Heartbeat Animation (Play Assist)
-To draw focus immediately to the newest discard:
-- Preserved standard chronological, player-by-player layouts in the central pool (`#dPool`).
+To draw focus immediately to the newest discard and reflect the real arcade case:
+- Configured the central pool (`#dPool`) as a single-slot discard placeholder. Instead of organizing previously discarded tiles in a cumulative grid, the central pool now only displays the active, most recently discarded tile.
 - Added a custom dual-animation sequence on the `.ld` class in `global.css` combining:
   1. A one-time dropdown scaling transition (`discPopIn` using a cubic-bezier curve).
   2. An infinite double-pulse rhythm (`heartBeat`) that physical scales the active tile to `1.16`, translates it upward by `8px` to float above adjacent tiles, and applies a rapid neon-pink heartbeat shadow pulse.
 - Configured a floating layer override (`z-index: 10 !important`) on the active discard tile to ensure it sits on top of all surrounding elements.
+- The discarded tile is automatically cleared from the center whenever a new turn starts and a player draws a card.
 
 ### Playtable Exit & Quit Button
-To allow players to exit gameplay rounds back to the start screen:
-- Added a retro crimson-red styled `quitBtn` to the `topBar`.
-- Configured a safe clean teardown handler (`handleQuitClick`) that sets game loop runner to false (`g.running = false`) and immediately resolves pending Promise callbacks for player discard and action selections with fallback default values, terminating async loops cleanly.
-- Added a keyboard shortcut (`Q` / `q`) bound to the keydown listener to trigger `handleQuitClick()` seamlessly in mouse-free play. Added visual instructions (`Q 退出`) to the bottom hotkey hints bar. Implemented a `handleQuitRef` reference routing model to prevent stale closures inside the mount-level keydown event listener.
+To allow players to exit gameplay rounds back to the start screen immediately without confirmation questions:
+- Added a retro crimson-red styled `quitBtn` to the gameplay `topBar` and a red retro quit button to the round-result overlay (next to "繼續對局") so players can return to the Start Screen at any time.
+- Configured a safe clean teardown handler (`handleQuitClick`) that sets game loop runner to false (`g.running = false`) and immediately resolves pending Promise callbacks for player discard and action selections with fallback default values, terminating active async game loops cleanly, and resets result screen states.
+- Added a keyboard shortcut (`Q` / `q`) bound to the keydown listener to trigger `handleQuitClick()` seamlessly in mouse-free play. Added visual instructions (`Q 退出`) to the bottom hotkey hints bar. Implemented a `handleQuitRef` reference routing model and a `showStartScreenRef` to ensure the keydown listener uses the latest component state values and works correctly on both the gameplay board and the round-result screen.
 
 
 

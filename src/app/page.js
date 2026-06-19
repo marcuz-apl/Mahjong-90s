@@ -85,6 +85,8 @@ export default function GamePage() {
   const checkOthersRef = useRef(null);
   const gameLoopRef = useRef(null);
   const handleQuitRef = useRef(null);
+  const showStartScreenRef = useRef(true);
+  showStartScreenRef.current = showStartScreen;
 
   // Synchronize async gameRef state to React states
   const syncState = () => {
@@ -652,6 +654,8 @@ export default function GamePage() {
 
       g.curPlayer = p;
       if (!skipDraw) {
+        g.lastDisc = null;
+        g.lastDiscP = -1;
         const drawn = draw(p);
         if (drawn < 0) {
           await endGameRef.current(-1, null, false);
@@ -729,7 +733,7 @@ export default function GamePage() {
       }
 
       const k = e.key.toUpperCase();
-      if (k === 'Q' && g.running) {
+      if (k === 'Q' && !showStartScreenRef.current) {
         e.preventDefault();
         handleQuitRef.current?.();
       }
@@ -888,9 +892,13 @@ export default function GamePage() {
       resolve({ type: 'pass' });
     }
 
+    g.lastDisc = null;
+    g.lastDiscP = -1;
+
     setShowStartScreen(true);
     setCoinBtnDisabled(false);
     setActionPanelOptions([]);
+    setResultScreenActive(false);
   };
   handleQuitRef.current = handleQuitClick;
 
@@ -1031,18 +1039,12 @@ export default function GamePage() {
             {/* Central Pool (牌河) */}
             <div id="aCenter">
               <div id="dPool">
-                {discards.map((pDiscards, pIdx) => (
-                  pDiscards.map((t, idx) => {
-                    const isLast = pIdx === lastDiscP && idx === pDiscards.length - 1 && lastDisc !== null;
-                    return (
-                      <div 
-                        key={`${pIdx}-${idx}`} 
-                        className={`tile tF szM ${isLast ? 'ld' : ''}`}
-                        dangerouslySetInnerHTML={{ __html: svgCache[t] || '' }}
-                      />
-                    );
-                  })
-                ))}
+                {lastDisc !== null && (
+                  <div 
+                    className="tile tF szM ld"
+                    dangerouslySetInnerHTML={{ __html: svgCache[lastDisc] || '' }}
+                  />
+                )}
               </div>
             </div>
 
@@ -1142,9 +1144,14 @@ export default function GamePage() {
                 ? `+${resultScreenData.pts}` 
                 : `-${Math.min(resultScreenData.pts, 2000)}`}
           </div>
-          <button className="nBtn" id="nBtn" onClick={handleNextRoundClick}>
-            繼續對局
-          </button>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <button className="nBtn" id="nBtn" onClick={handleNextRoundClick}>
+              繼續對局
+            </button>
+            <button className="nBtn resQuitBtn" onClick={handleQuitClick}>
+              退出
+            </button>
+          </div>
         </div>
       )}
     </div>
