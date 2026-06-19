@@ -71,10 +71,11 @@ StreetMachine-Mahjong/
 
 ---
 
-## 4. Pre-Commit Hook & Version Bumping
-To maintain sister-project consistency with `ResoLogix`, we configured an automated pre-commit version bumper:
+## 4. Pre-Commit Hooks & Version Bumping
+To maintain sister-project consistency with `ResoLogix`, we configured two Git hooks:
 - **[bump-version.js](file:///root/projects/StreetMachine-Mahjong/scripts/bump-version.js)**: Runs in ESM. It increments the patch version following `m.n.p` rules (wrapping patch and minor numbers at 9) and updates `buildTime` (formatted as `build YYYY-MM-DD-HHMM`).
 - **[pre-commit hook](file:///root/projects/StreetMachine-Mahjong/.git/hooks/pre-commit)**: Automatically triggers on `git commit`, running the node script and staging `package.json` before committing.
+- **[prepare-commit-msg hook](file:///root/projects/StreetMachine-Mahjong/.git/hooks/prepare-commit-msg)**: Prepend the version number and build timestamp (e.g. `v1.0.5 build 2026-06-19-1145`) to the commit message automatically.
 
 ---
 
