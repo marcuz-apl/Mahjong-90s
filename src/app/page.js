@@ -84,6 +84,7 @@ export default function GamePage() {
   const aiDiscardRef = useRef(null);
   const checkOthersRef = useRef(null);
   const gameLoopRef = useRef(null);
+  const handleQuitRef = useRef(null);
 
   // Synchronize async gameRef state to React states
   const syncState = () => {
@@ -730,7 +731,7 @@ export default function GamePage() {
       const k = e.key.toUpperCase();
       if (k === 'Q' && g.running) {
         e.preventDefault();
-        handleQuitClick();
+        handleQuitRef.current?.();
       }
       if (k === 'H') triggerClickAB('abW');
       if (k === 'P') triggerClickAB('abP');
@@ -893,6 +894,7 @@ export default function GamePage() {
       setActionPanelOptions([]);
     }
   };
+  handleQuitRef.current = handleQuitClick;
 
   const handleNextRoundClick = () => {
     setResultScreenActive(false);
