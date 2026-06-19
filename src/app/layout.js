@@ -8,7 +8,7 @@ const notoSansSC = Noto_Sans_SC({
 });
 
 export const metadata = {
-  title: '街機麻將 大滿貫',
+  title: '街機麻將 Arcade Mahjong 90s',
   description: '90年代經典街機麻將遊戲網頁版',
 };
 
