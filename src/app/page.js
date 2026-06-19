@@ -1137,7 +1137,7 @@ export default function GamePage() {
 
       {/* START SCREEN */}
       {screenState === 'start' && (
-        <div id="startScreen">
+        <div id="startScreen" className={gameMode}>
           <div className="titleMain">街機麻雀</div>
           <div className="titleSub">ARCADE MAHJONG</div>
           <div className="decoLine"></div>
@@ -1211,16 +1211,7 @@ export default function GamePage() {
             </button>
 
             {loginError && <div className="loginError">{loginError}</div>}
-            {/* Temporarily hidden Denshi Kiban Seabed Win Demo button
-            <button 
-              type="button" 
-              className="startBtn demoHaidiBtn" 
-              onClick={triggerHaidiDemo}
-              style={{ width: '100%', marginTop: '15px' }}
-            >
-              🌌 演示海底撈月效果 (音效)
-            </button>
-            */}
+            
             <div className="adminEntranceLink">
               <Link href="/admin">⚙️ 值班經理專區</Link>
             </div>
@@ -1233,7 +1224,7 @@ export default function GamePage() {
       )}
 
       {/* GAME SCREEN */}
-      <div id="gameScreen" className={screenState === 'game' ? 'active' : ''}>
+      <div id="gameScreen" className={`${screenState === 'game' ? 'active' : ''} ${gameMode}`}>
         <div id="topBar">
           <span className={`topBarModeBadge ${gameMode}`}>
             {gameMode === 'tiankai' ? '天開眼' : '電子基盤'}

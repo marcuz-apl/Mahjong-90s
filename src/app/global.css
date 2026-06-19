@@ -48,6 +48,16 @@ html,body{
 #startScreen.hidden{
   display:none;
 }
+#startScreen.denshi, #gameScreen.denshi {
+  background: radial-gradient(circle at center, rgba(13, 33, 13, 0.9) 0%, rgba(5, 15, 5, 0.95) 100%), url('/denshi_bg.png') no-repeat center center !important;
+  background-size: cover !important;
+  background-blend-mode: multiply;
+}
+#startScreen.tiankai, #gameScreen.tiankai {
+  background: radial-gradient(circle at center, rgba(26, 8, 26, 0.9) 0%, rgba(13, 3, 13, 0.95) 100%), url('/tiankai_bg.png') no-repeat center center !important;
+  background-size: cover !important;
+  background-blend-mode: multiply;
+}
 .titleMain{
   font-size:clamp(52px,9vw,96px);
   font-weight:900;
