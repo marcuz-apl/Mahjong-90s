@@ -1138,7 +1138,7 @@ export default function GamePage() {
       {/* START SCREEN */}
       {screenState === 'start' && (
         <div id="startScreen">
-          <div className="titleMain">大滿貫</div>
+          <div className="titleMain">街機麻雀</div>
           <div className="titleSub">ARCADE MAHJONG</div>
           <div className="decoLine"></div>
           
