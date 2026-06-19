@@ -7,8 +7,8 @@ This document consolidates the **Implementation Plan** and **Refactoring Walkthr
 ## 1. Project Goal & Overview
 The objective was to refactor the game from a single-file HTML monolith (`Mahjong_v1.html`) into a modern, modular **Next.js (App Router)** web application.
 - **Local SVGs**: Configure the game to load the high-quality vector SVG assets from the local directory instead of relying on external CDNs.
-- **SQLite3 Database**: Integrate a local SQLite database to persist scores, game history, and chips across play sessions.
-- **Anonymous Tracking**: Store a unique client ID (UUID) in `localStorage` to identify guest players without forcing a registration or login screen.
+- **SQLite3 Database**: Integrate a local SQLite database to persist scores, game history, and chips across play sessions for registered players.
+- **User Registration & Guest Mode**: Provide a retro-arcade registration/login form. Guest players bypass SQLite database connections entirely to optimize queries and save database size (using client state and browser storage), while registered users save persistent histories in SQLite.
 - **Git Hook & Auto-Versioning**: Mimic the pre-commit hook auto-versioning scheme from the sister project `ResoLogix`.
 
 ---
@@ -24,7 +24,7 @@ The objective was to refactor the game from a single-file HTML monolith (`Mahjon
 ### Database Schema
 We run a file-based SQLite database located at `data/mahjong-90s.db`.
 - **`users`**:
-  - `id` (TEXT, Primary Key) - Browser-generated UUID.
+  - `id` (TEXT, Primary Key) - Player custom username.
   - `created_at` (DATETIME) - Creation date.
   - `chips` (INTEGER, Default: 10,000) - Remaining chips.
   - `last_active` (DATETIME) - Activity tracking.
@@ -115,3 +115,30 @@ At runtime, the browser preloads vector files from `/vectors/SVG/`. To align wit
   - Red Dragon (中) maps to `7z.svg`
   - Green Dragon (發) maps to `6z.svg`
   - White Dragon (白) maps to `5z.svg`
+
+---
+
+## 6. Key Optimization Plan, Workarounds & Custom Features
+
+### React Hydration Mismatch Workarounds
+During SSR and hydration steps, React warns if the server-rendered markup differs from the client-rendered DOM. We resolved this through three techniques:
+1. **Deferred Client Rendering**: Added a `mounted` state in `page.js`. We perform `if (!mounted) return null;` at the top of the render layout. This prevents the server from outputting components that rely on local storage or dynamic client state.
+2. **Standard font loading**: Manual Google Fonts `<link>` tags in the root layout were replaced with Next.js's native `next/font/google` asset pre-loader (`Noto_Sans_SC`), eliminating server-client font headers mismatches.
+3. **Attribute warning suppression**: Added `suppressHydrationWarning` to the `<html>` and `<body>` tags in `layout.js` to prevent validation failures caused by browser translation engines or style-injecting extensions.
+
+### Next.js Dev Badge Suppression Workaround
+The floating Next.js 15 dev routing badge ("Big N" logo) in local environments was hidden through two layers of suppression:
+1. **Configuration Overrides**: Configured `devIndicators: false` in `next.config.js` to disable routing and compilation overlays.
+2. **CSS Pointer Overrides**: Added strict selectors (`nextjs-portal`, `#nextjs-portal`, `next-route-announcer`, `#nextjs-router-announcer`, `[data-nextjs-toast-wrapper]`, `.nextjs-static-indicator`) set to `display: none !important` at the end of `global.css` as a bulletproof styling layer.
+
+### Game Difficulty Level Tuning Heuristic
+The AI's playing strength is controlled by three settings:
+- **Easy (簡單)**: AI has a 40% chance to discard a completely random tile instead of the worst heuristic tile. Probability to Pon/Kan drops to 10%, and Chi probability drops to 20%.
+- **Normal (普通)**: AI has a 15% random discard chance. Pon/Kan probability is 30%; Chi probability is 50%.
+- **Hard (困難)**: AI is 100% optimal (0% randomness). Pon/Kan probability is 50%; Chi probability is 80%.
+
+### SQLite Access Optimization (Guest Mode)
+To save processing overhead and limit database sizes, we separated play paths:
+- **Registered Mode**: Standard forms take user handles (2-12 characters, checked on frontend/backend APIs). Hits server-side POST `/api/user` and `/api/game` endpoints to record chips and game logs.
+- **Guest Mode**: Guest players bypass server-side endpoints entirely. Progress is saved locally in the browser's `localStorage` (`street_mahjong_guest_chips`), removing database query load.
+
