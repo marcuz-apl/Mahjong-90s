@@ -78,6 +78,76 @@ const playHaidiSound = () => {
   playSynthChord(startTime + 1.8, [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50], 1.8);
 };
 
+// Web Audio API Retro Arcade sound effects for Denshi Kiban (Electronic Base) mode
+const playDenshiSound = (type, customCount = 0) => {
+  if (typeof window === 'undefined') return;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+  
+  const ctx = new AudioCtx();
+  
+  if (type === 'dispatch') {
+    // Rapid sequence of short square-wave chirps for dealing tiles
+    const count = customCount || 14;
+    const interval = 0.05; // 50ms interval
+    const duration = 0.025; // 25ms note
+    for (let i = 0; i < count; i++) {
+      const time = ctx.currentTime + i * interval;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(880 - (i % 3) * 50, time); // slightly oscillating frequency for arcade feel
+      gain.gain.setValueAtTime(0.08, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(time);
+      osc.stop(time + duration + 0.01);
+    }
+  } else if (type === 'draw') {
+    // Sharp retro double-pip sound for drawing a tile
+    const time = ctx.currentTime;
+    
+    // First pip
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'square';
+    osc1.frequency.setValueAtTime(660, time);
+    gain1.gain.setValueAtTime(0.08, time);
+    gain1.gain.exponentialRampToValueAtTime(0.001, time + 0.03);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start(time);
+    osc1.stop(time + 0.04);
+    
+    // Second pip (higher frequency)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'square';
+    osc2.frequency.setValueAtTime(990, time + 0.03);
+    gain2.gain.setValueAtTime(0.08, time + 0.03);
+    gain2.gain.exponentialRampToValueAtTime(0.001, time + 0.03 + 0.05);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(time + 0.03);
+    osc2.stop(time + 0.03 + 0.06);
+  } else if (type === 'discard') {
+    // Short solid pitch-slide down for discard
+    const time = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(350, time);
+    osc.frequency.linearRampToValueAtTime(120, time + 0.08);
+    gain.gain.setValueAtTime(0.08, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(time);
+    osc.stop(time + 0.09);
+  }
+};
+
 export default function GamePage() {
   const [mounted, setMounted] = useState(false);
   const [difficulty, setDifficulty] = useState('normal');
@@ -327,6 +397,9 @@ export default function GamePage() {
     }
     g.newTileIdx = idx;
     g.drawnTile = t;
+    if (g.gameMode === 'denshi') {
+      playDenshiSound('draw');
+    }
     return t;
   };
 
@@ -340,6 +413,9 @@ export default function GamePage() {
     g.lastDiscP = p;
     g.newTileIdx = -1;
     g.drawnTile = null;
+    if (g.gameMode === 'denshi') {
+      playDenshiSound('discard');
+    }
     return t;
   };
 
@@ -840,9 +916,13 @@ export default function GamePage() {
   const startGame = async () => {
     const g = gameRef.current;
     g.running = true;
+    g.gameMode = gameMode;
     initWall();
     deal();
     syncState();
+    if (g.gameMode === 'denshi') {
+      playDenshiSound('dispatch');
+    }
     await gameLoopRef.current(g.dealer, false);
   };
 
