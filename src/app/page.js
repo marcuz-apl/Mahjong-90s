@@ -563,7 +563,7 @@ export default function GamePage() {
     }
     g.newTileIdx = idx;
     g.drawnTile = t;
-    if (g.gameMode === 'denshi') {
+    if (g.gameMode === 'denshi' || g.gameMode === 'tiankai') {
       playDenshiSound('draw');
     }
     return t;
@@ -579,7 +579,7 @@ export default function GamePage() {
     g.lastDiscP = p;
     g.newTileIdx = -1;
     g.drawnTile = null;
-    if (g.gameMode === 'denshi') {
+    if (g.gameMode === 'denshi' || g.gameMode === 'tiankai') {
       playDenshiSound('discard');
     }
     return t;
@@ -1117,7 +1117,7 @@ export default function GamePage() {
       }
     }
 
-    if (g.gameMode === 'denshi') {
+    if (g.gameMode === 'denshi' || g.gameMode === 'tiankai') {
       playDenshiSound('dispatch');
     }
     await gameLoopRef.current(g.dealer, false);
