@@ -1650,8 +1650,25 @@ export default function GamePage() {
 
   if (!mounted) return null;
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoGame',
+    'name': '街機麻將 Arcade Mahjong 90s - 經典電子基盤 & 天開眼',
+    'description': '重溫1990年代經典街機街頭麻將遊戲（經典電子基盤與天開眼透視、三元換牌玩法）。',
+    'genre': 'Tabletop / Mahjong',
+    'playMode': 'SinglePlayer',
+    'applicationCategory': 'Game',
+    'operatingSystem': 'Any',
+    'url': 'https://arcade-mahjong.example.com',
+  };
+
   return (
-    <div id="app" className={`tile-back-${tileBackColor}`}>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div id="app" className={`tile-back-${tileBackColor}`}>
       {/* LOBBY PORTAL COVER SCREEN */}
       {screenState === 'portal' && (
         <div id="portalScreen">
@@ -1662,6 +1679,22 @@ export default function GamePage() {
           <span className="portalDecorText decorEN">Arcade Mahjong Arena</span>
           <span className="portalDecorText decorJA1">アーケード麻雀ゲームセンター</span>
           <span className="portalDecorText decorJA2">対戦脱衣麻雀ゲーム</span>
+          
+          <img 
+            src="/logo.png" 
+            alt="Arcade Mahjong Logo" 
+            style={{ 
+              position: 'absolute', 
+              bottom: '24px', 
+              right: '24px', 
+              width: '90px', 
+              height: '90px', 
+              borderRadius: '10px', 
+              boxShadow: '0 0 15px rgba(212,168,67,0.4)', 
+              border: '2px solid var(--gold)',
+              zIndex: 10
+            }} 
+          />
           
           <div className="portalHeader">
             <h1 className="portalMainTitle">街機麻雀遊戲廳</h1>
@@ -2164,6 +2197,7 @@ export default function GamePage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
