@@ -955,25 +955,65 @@ export default function GamePage() {
 
   const runSanyuanExchange = () => {
     return new Promise((resolve) => {
-      showMsg('【三元換牌】請選擇手牌中要更換的牌');
+      let exchangesLeft = 3;
+      let secondsLeft = 6;
+
+      const sanyuanPool = [31, 32, 33];
+      const targetSanyuanTile = sanyuanPool[Math.floor(Math.random() * sanyuanPool.length)];
+
+      const updateMessage = () => {
+        showMsg(`【三元換牌 / Sanyuan Exchange】請選擇手牌中要更換的3張牌 (剩餘 ${exchangesLeft} 次，時間剩餘 ${secondsLeft} 秒 / Select ${exchangesLeft} tiles, ${secondsLeft}s remaining)`);
+      };
+
       setSanyuanActive(true);
-      resolveSanyuanRef.current = async (idx) => {
-        const g = gameRef.current;
-        const oldTile = g.hands[0][idx];
-        const sanyuanPool = [31, 32, 33];
-        const newTile = sanyuanPool[Math.floor(Math.random() * sanyuanPool.length)];
-        
-        g.hands[0][idx] = newTile;
+      updateMessage();
+
+      const finishExchange = async (timeOut = false) => {
+        clearInterval(timerId);
+        resolveSanyuanRef.current = null;
+        setSanyuanActive(false);
         sortH(0);
         syncState();
-        
-        showMsg(`三元換牌成功！將 ${tName(oldTile)} 換成了 ${tName(newTile)}`);
+        if (timeOut) {
+          showMsg('【三元換牌 / Sanyuan Exchange】時間到！換牌結束 / Time\'s up! Sanyuan exchange completed');
+        } else {
+          showMsg('【三元換牌 / Sanyuan Exchange】三元換牌成功！ / Sanyuan exchange successful!');
+        }
         playDenshiSound('card_flip');
-        
         await delay(1800);
         hideMsg();
         resolve(true);
       };
+
+      const timerId = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+          finishExchange(true);
+        } else {
+          updateMessage();
+        }
+      }, 1000);
+
+      resolveSanyuanRef.current = Object.assign(async (idx) => {
+        const g = gameRef.current;
+        g.hands[0][idx] = targetSanyuanTile;
+        syncState();
+        playDenshiSound('card_flip');
+        
+        exchangesLeft--;
+        if (exchangesLeft <= 0) {
+          await finishExchange(false);
+        } else {
+          updateMessage();
+        }
+      }, {
+        cancel: () => {
+          clearInterval(timerId);
+          resolveSanyuanRef.current = null;
+          setSanyuanActive(false);
+          resolve(false);
+        }
+      });
     });
   };
 
@@ -1306,10 +1346,7 @@ export default function GamePage() {
         } else if (e.key === 'Enter') {
           e.preventDefault();
           if (sanyuanActiveRef.current && resolveSanyuanRef.current) {
-            const resolve = resolveSanyuanRef.current;
-            resolveSanyuanRef.current = null;
-            setSanyuanActive(false);
-            resolve(g.selIdx);
+            resolveSanyuanRef.current(g.selIdx);
           } else if (resolveDiscRef.current) {
             const resolve = resolveDiscRef.current;
             resolveDiscRef.current = null;
@@ -1583,11 +1620,14 @@ export default function GamePage() {
     setTiankaiPeekActive(false);
 
     if (resolveSanyuanRef.current) {
-      const resolve = resolveSanyuanRef.current;
-      resolveSanyuanRef.current = null;
-      resolve(false);
+      if (resolveSanyuanRef.current.cancel) {
+        resolveSanyuanRef.current.cancel();
+      } else {
+        const resolve = resolveSanyuanRef.current;
+        resolveSanyuanRef.current = null;
+        resolve(false);
+      }
     }
-    setSanyuanActive(false);
 
     // Resolve pending async promises to terminate loops cleanly
     if (resolveDiscRef.current) {
@@ -1631,10 +1671,7 @@ export default function GamePage() {
   const handleTileClick = (idx) => {
     const g = gameRef.current;
     if (sanyuanActiveRef.current && resolveSanyuanRef.current) {
-      const resolve = resolveSanyuanRef.current;
-      resolveSanyuanRef.current = null;
-      setSanyuanActive(false);
-      resolve(idx);
+      resolveSanyuanRef.current(idx);
       return;
     }
 
