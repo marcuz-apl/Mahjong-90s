@@ -98,7 +98,7 @@ Make sure you have Node.js (v18+) and npm installed.
    ```
 5. Click **"投幣開始"** (Insert Coin to Start) to load the assets and start playing!
 
-### Run with Docker
+### Run with Docker locally
 
 Alternatively, you can run the game using Docker and Docker Compose (which includes SQLite database volume mounting for automated data persistence):
 
@@ -113,7 +113,36 @@ Alternatively, you can run the game using Docker and Docker Compose (which inclu
    docker compose down
    ```
 
----
+### Run with Docker Cloud
+Firstly build and push:
+```bash
+docker buildx build -t <dockeruser>/arcade-mahjong:latest --platform linux/amd64 --push .
+```
+Then, switch to NAS, and create a `docker-compose.yml` like the following to pull down the latest version.
+```yml
+services:
+  mahjong90s:
+    image: <dockeruser>/arcade-mahjong:latest
+    container_name: arcade-mahjong
+    ports:
+      - "4010:4010"
+    volumes:
+      - ./data:/app/data
+    restart: always
+```
+Create folder `data` and change the ownership to nextjs group and user `1001:1001`.
+```bash
+mkdir -p data
+sudo chown -R 1001:1001 data
+```
+Then pull the image to NAS to run the game.
+```bash
+docker-compose up -d
+```
+Pull down the docker container? please do:
+```bash
+docker-compose down
+```
 
 ## 👏 Credits
 - Mahjong Tile Vectors files: https://github.com/lietxia/mahjong_graphic
