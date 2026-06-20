@@ -501,8 +501,8 @@ export default function AdminPage() {
               autoFocus
             />
             <div style={{ display: 'flex', gap: '12px', width: '100%', marginTop: '10px' }}>
-              <button type="submit" className="adminUnlockBtn">解鎖控制台</button>
-              <Link href="/" className="adminBackGameBtn">返回遊戲</Link>
+              <button type="submit" className="adminUnlockBtn">解鎖控制台 / UNLOCK</button>
+              <Link href="/" className="adminBackGameBtn">返回遊戲 / BACK TO GAME</Link>
             </div>
           </form>
           {loginError && <div className="adminLoginError">{loginError}</div>}
@@ -526,8 +526,8 @@ export default function AdminPage() {
           <span className="brandSub">街機麻將 90s 控制台</span>
         </div>
         <div className="adminHeaderActions">
-          <button className="adminHeaderBtn adminLogoutBtn" onClick={handleLogout}>退出登入</button>
-          <Link href="/" className="adminHeaderBtn adminBackBtn">返回遊戲</Link>
+          <button className="adminHeaderBtn adminLogoutBtn" onClick={handleLogout}>退出登入 / LOGOUT</button>
+          <Link href="/" className="adminHeaderBtn adminBackBtn">返回遊戲 / BACK TO GAME</Link>
         </div>
       </header>
 
@@ -539,25 +539,25 @@ export default function AdminPage() {
             className={`adminSidebarItem ${activeTab === 'overview' ? 'active' : ''}`}
             onClick={() => { setActiveTab('overview'); loadStats(); }}
           >
-            📊 數據概覽
+            📊 數據概覽 / OVERVIEW
           </button>
           <button 
             className={`adminSidebarItem ${activeTab === 'users' ? 'active' : ''}`}
             onClick={() => { setActiveTab('users'); loadUsers(); }}
           >
-            👥 用戶管理
+            👥 用戶管理 / USERS
           </button>
           <button 
             className={`adminSidebarItem ${activeTab === 'settings' ? 'active' : ''}`}
             onClick={() => { setActiveTab('settings'); loadSettings(); }}
           >
-            ⚙️ 遊戲設置
+            ⚙️ 遊戲設置 / SETTINGS
           </button>
           <button 
             className={`adminSidebarItem ${activeTab === 'password' ? 'active' : ''}`}
             onClick={() => { setActiveTab('password'); setPasswordError(''); setPasswordSuccess(''); }}
           >
-            🔑 修改密碼
+            🔑 修改密碼 / PASSWORD
           </button>
         </aside>
 
@@ -688,8 +688,8 @@ export default function AdminPage() {
                           <td>{new Date(user.last_active).toLocaleString()}</td>
                           <td>{user.games_played} 局 (贏: {user.wins})</td>
                           <td className="userActionsCell">
-                            <button className="userActBtn editChipsBtn" onClick={() => handleEditUserClick(user)}>編輯籌碼</button>
-                            <button className="userActBtn deleteUserBtn" onClick={() => handleDeleteUser(user.id)}>刪除玩家</button>
+                            <button className="userActBtn editChipsBtn" onClick={() => handleEditUserClick(user)}>編輯籌碼 / EDIT CHIPS</button>
+                            <button className="userActBtn deleteUserBtn" onClick={() => handleDeleteUser(user.id)}>刪除玩家 / DELETE</button>
                           </td>
                         </tr>
                       ))
@@ -722,8 +722,8 @@ export default function AdminPage() {
                         />
                       </div>
                       <div className="modalActions">
-                        <button type="submit" className="modalSubmitBtn">確認修改</button>
-                        <button type="button" className="modalCancelBtn" onClick={() => setEditUser(null)}>取消</button>
+                        <button type="submit" className="modalSubmitBtn">確認修改 / SAVE</button>
+                        <button type="button" className="modalCancelBtn" onClick={() => setEditUser(null)}>取消 / CANCEL</button>
                       </div>
                     </form>
                   </div>
@@ -959,7 +959,7 @@ export default function AdminPage() {
                 </div>
 
                 <div className="settingsActionRow">
-                  <button type="submit" className="saveSettingsBtn">保存遊戲設置</button>
+                  <button type="submit" className="saveSettingsBtn">保存遊戲設置 / SAVE SETTINGS</button>
                 </div>
               </form>
 
@@ -973,7 +973,7 @@ export default function AdminPage() {
                     style={{ background: 'linear-gradient(180deg, #ff2d75, #b01040)', borderColor: '#ff7da4', boxShadow: '0 0 10px rgba(255,45,117,0.4)', textShadow: '0 0 5px rgba(255,255,255,0.5)', width: 'auto' }}
                     onClick={playHaidiSound}
                   >
-                    🌌 演示海底撈月效果 (音效 1)
+                    🌌 演示海底撈月效果 (音效 1) / PREVIEW 1
                   </button>
                   <button 
                     type="button" 
@@ -981,7 +981,7 @@ export default function AdminPage() {
                     style={{ background: 'linear-gradient(180deg, #be2edd, #8e44ad)', borderColor: '#e056fd', boxShadow: '0 0 10px rgba(190,46,221,0.4)', textShadow: '0 0 5px rgba(255,255,255,0.5)', width: 'auto' }}
                     onClick={playHaidiSound2}
                   >
-                    🌌 演示海底撈月效果 (音效 2)
+                    🌌 演示海底撈月效果 (音效 2) / PREVIEW 2
                   </button>
                 </div>
               </div>
@@ -1035,7 +1035,7 @@ export default function AdminPage() {
                 </div>
 
                 <div className="settingsActionRow" style={{ marginTop: '20px' }}>
-                  <button type="submit" className="saveSettingsBtn">更新密碼</button>
+                  <button type="submit" className="saveSettingsBtn">更新密碼 / UPDATE PASSWORD</button>
                 </div>
               </form>
 

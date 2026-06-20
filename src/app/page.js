@@ -981,14 +981,14 @@ export default function GamePage() {
     const g = gameRef.current;
     const acts = [];
     if (canWinRaw(g.hands[0])) {
-      acts.push({ type: 'win', label: '自模', cls: 'abW', key: 'H' });
+      acts.push({ type: 'win', label: '自模 / TSUMO', cls: 'abW', key: 'H' });
     }
     const ankans = getAnkan(0);
     for (let i = 0; i < ankans.length; i++) {
       acts.push({
         type: 'ankan',
         tile: ankans[i],
-        label: '暗槓 ' + tName(ankans[i]),
+        label: '暗槓 ' + tName(ankans[i]) + ' / ANKONG',
         cls: 'abK',
         key: 'K'
       });
@@ -999,7 +999,7 @@ export default function GamePage() {
       if (hasNonDragon) {
         acts.push({
           type: 'sanyuan',
-          label: '三元換牌',
+          label: '三元換牌 / SWAP',
           cls: 'abSanyuan',
           key: 'Y'
         });
@@ -1008,7 +1008,7 @@ export default function GamePage() {
 
     if (acts.length > 0) {
       if (!acts.some(a => a.type === 'pass')) {
-        acts.push({ type: 'pass', label: '跳過', cls: 'abS', key: 'Space' });
+        acts.push({ type: 'pass', label: '跳過 / PASS', cls: 'abS', key: 'Space' });
       }
       const ch = await showActsRef.current(acts);
       if (ch.type === 'win') {
@@ -1076,8 +1076,8 @@ export default function GamePage() {
       if (canWinWith(g.hands[p], tile)) {
         if (p === 0) {
           const ch = await showActsRef.current([
-            { type: 'win', label: '胡牌', cls: 'abW', key: 'H' },
-            { type: 'pass', label: '跳過', cls: 'abS', key: 'Space' }
+            { type: 'win', label: '胡牌 / RON', cls: 'abW', key: 'H' },
+            { type: 'pass', label: '跳過 / PASS', cls: 'abS', key: 'Space' }
           ]);
           if (ch.type === 'win') {
             doPon(0, tile);
@@ -1101,9 +1101,9 @@ export default function GamePage() {
 
       if (p === 0) {
         const acts = [];
-        if (cK) acts.push({ type: 'kan', label: '槓', cls: 'abK', key: 'K' });
-        if (cP) acts.push({ type: 'pon', label: '碰', cls: 'abP', key: 'P' });
-        acts.push({ type: 'pass', label: '跳過', cls: 'abS', key: 'Space' });
+        if (cK) acts.push({ type: 'kan', label: '槓 / KONG', cls: 'abK', key: 'K' });
+        if (cP) acts.push({ type: 'pon', label: '碰 / PONG', cls: 'abP', key: 'P' });
+        acts.push({ type: 'pass', label: '跳過 / PASS', cls: 'abS', key: 'Space' });
 
         const ch = await showActsRef.current(acts);
         if (ch.type === 'kan') {
@@ -1138,9 +1138,9 @@ export default function GamePage() {
         const acts = [];
         for (let j = 0; j < chiOpts.length; j++) {
           const nm = chiOpts[j].map(t => tName(t)).join('');
-          acts.push({ type: 'chi', chiIdx: j, label: '吃 ' + nm, cls: 'abC', key: 'C' });
+          acts.push({ type: 'chi', chiIdx: j, label: '吃 ' + nm + ' / CHOW', cls: 'abC', key: 'C' });
         }
-        acts.push({ type: 'pass', label: '跳過', cls: 'abS', key: 'Space' });
+        acts.push({ type: 'pass', label: '跳過 / PASS', cls: 'abS', key: 'Space' });
 
         const ch = await showActsRef.current(acts);
         if (ch.type === 'chi') {
@@ -1858,7 +1858,7 @@ export default function GamePage() {
                 }
               }}
             >
-              模式: {gameMode === 'tiankai' ? '天開眼 (透視)' : '電子基盤 (經典)'}
+              模式/Mode: {gameMode === 'tiankai' ? '天開眼/Tenkaigen' : '電子基盤/Denshi Kiban'}
             </div>
 
             <div className="loginContainer">
@@ -1878,7 +1878,7 @@ export default function GamePage() {
                     className="startBtn loginBtn" 
                     disabled={coinBtnDisabled}
                   >
-                    登入並記錄
+                    登入並記錄 / LOGIN
                   </button>
                   <button 
                     type="button"
@@ -1886,7 +1886,7 @@ export default function GamePage() {
                     onClick={handleGuestPlay}
                     disabled={coinBtnDisabled}
                   >
-                    訪客試玩
+                    訪客試玩 / GUEST
                   </button>
                 </div>
               </form>
@@ -1897,7 +1897,7 @@ export default function GamePage() {
                 disabled={coinBtnDisabled}
                 style={{ width: '100%', marginTop: '10px' }}
               >
-                返回大堂
+                返回大堂 / LOBBY
               </button>
 
               {loginError && <div className="loginError">{loginError}</div>}
@@ -1925,7 +1925,7 @@ export default function GamePage() {
       <div id="gameScreen" className={`${screenState === 'game' ? 'active' : ''} ${gameMode}`}>
         <div id="topBar">
           <span className={`topBarModeBadge ${gameMode}`}>
-            {gameMode === 'tiankai' ? '天開眼' : '電子基盤'}
+            {gameMode === 'tiankai' ? '天開眼 / Tenkaigen' : '電子基盤 / Denshi Kiban'}
           </span>
           <span className="bI">玩家: <span className="bPlayerName">{isGuest ? '訪客' : username}</span></span>
           <span className="bI">籌碼 <span className="bS" id="elS">{score}</span></span>
@@ -1934,7 +1934,7 @@ export default function GamePage() {
             {difficulty === 'easy' ? '簡單' : difficulty === 'hard' ? '困難' : '普通'}
           </span></span>
           <span className="bI" id="elRm">殘 {wallCount}</span>
-          <button className="quitBtn" onClick={handleQuitClick}>退出</button>
+          <button className="quitBtn" onClick={handleQuitClick}>退出 / QUIT</button>
         </div>
         
         <div id="gameMain">
@@ -2117,10 +2117,10 @@ export default function GamePage() {
           </div>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
             <button className="nBtn" id="nBtn" onClick={handleNextRoundClick}>
-              繼續對局
+              繼續對局 / NEXT
             </button>
             <button className="nBtn resQuitBtn" onClick={handleQuitClick}>
-              退出
+              退出 / QUIT
             </button>
           </div>
         </div>
