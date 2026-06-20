@@ -958,11 +958,30 @@ export default function GamePage() {
       let exchangesLeft = 3;
       let secondsLeft = 6;
 
-      const sanyuanPool = [31, 32, 33];
+      const getVisibleCount = (T) => {
+        const g = gameRef.current;
+        let count = 0;
+        for (let p = 0; p < 4; p++) {
+          count += g.discards[p].filter(x => x === T).length;
+        }
+        for (let p = 0; p < 4; p++) {
+          for (const m of g.melds[p]) {
+            count += m.tiles.filter(x => x === T).length;
+          }
+        }
+        return count;
+      };
+
+      let sanyuanPool = [31, 32, 33].filter(T => getVisibleCount(T) < 3);
+      if (sanyuanPool.length === 0) {
+        const counts = [31, 32, 33].map(T => ({ tile: T, count: getVisibleCount(T) }));
+        counts.sort((a, b) => a.count - b.count);
+        sanyuanPool = [counts[0].tile];
+      }
       const targetSanyuanTile = sanyuanPool[Math.floor(Math.random() * sanyuanPool.length)];
 
       const updateMessage = () => {
-        showMsg(`【三元換牌 / Sanyuan Exchange】請選擇手牌中要更換的3張牌 (剩餘 ${exchangesLeft} 次，時間剩餘 ${secondsLeft} 秒 / Select ${exchangesLeft} tiles, ${secondsLeft}s remaining)`);
+        showMsg(`三元牌換牌：${secondsLeft}`);
       };
 
       setSanyuanActive(true);
@@ -974,14 +993,8 @@ export default function GamePage() {
         setSanyuanActive(false);
         sortH(0);
         syncState();
-        if (timeOut) {
-          showMsg('【三元換牌 / Sanyuan Exchange】時間到！換牌結束 / Time\'s up! Sanyuan exchange completed');
-        } else {
-          showMsg('【三元換牌 / Sanyuan Exchange】三元換牌成功！ / Sanyuan exchange successful!');
-        }
-        playDenshiSound('card_flip');
-        await delay(1800);
         hideMsg();
+        playDenshiSound('card_flip');
         resolve(true);
       };
 
@@ -1019,6 +1032,18 @@ export default function GamePage() {
 
   playerDiscardRef.current = async () => {
     const g = gameRef.current;
+
+    // Check if Sanyuan Exchange triggers automatically at the start of player's turn
+    if (g.gameMode === 'tiankai' && Math.random() < 0.20) {
+      const hasNonDragon = g.hands[0].some(t => t < 31 || t > 33);
+      if (hasNonDragon) {
+        const swapped = await runSanyuanExchange();
+        if (swapped) {
+          return await playerDiscardRef.current();
+        }
+      }
+    }
+
     const acts = [];
     if (canWinRaw(g.hands[0])) {
       acts.push({ type: 'win', label: '自模 / TSUMO', cls: 'abW', key: 'H' });
@@ -1032,18 +1057,6 @@ export default function GamePage() {
         cls: 'abK',
         key: 'K'
       });
-    }
-
-    if (g.gameMode === 'tiankai' && Math.random() < 0.20) {
-      const hasNonDragon = g.hands[0].some(t => t < 31 || t > 33);
-      if (hasNonDragon) {
-        acts.push({
-          type: 'sanyuan',
-          label: '三元換牌 / SWAP',
-          cls: 'abSanyuan',
-          key: 'Y'
-        });
-      }
     }
 
     if (acts.length > 0) {
@@ -1064,12 +1077,6 @@ export default function GamePage() {
         }
         syncState();
         return await playerDiscardRef.current();
-      }
-      if (ch.type === 'sanyuan') {
-        const swapped = await runSanyuanExchange();
-        if (swapped) {
-          return await playerDiscardRef.current();
-        }
       }
     }
 
@@ -2091,12 +2098,7 @@ export default function GamePage() {
               <div className="keyHintItem"><span className="keyCap">C</span> 吃</div>
               <div className="keyDivider">|</div>
               <div className="keyHintItem"><span className="keyCap">Space</span> 跳過</div>
-              {gameMode === 'tiankai' && (
-                <>
-                  <div className="keyDivider">|</div>
-                  <div className="keyHintItem"><span className="keyCap">Y</span> 三元換牌</div>
-                </>
-              )}
+
               <div className="keyDivider">|</div>
               <div className="keyHintItem"><span className="keyCap">Q</span> 退出</div>
             </div>

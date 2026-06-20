@@ -1,12 +1,12 @@
 {
   "name": "street-machine-mahjong",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 4010",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 4010",
     "lint": "next lint"
   },
   "dependencies": {
@@ -16,5 +16,5 @@
     "react-dom": "^19.0.0",
     "uuid": "^9.0.1"
   },
-  "buildTime": "build 2026-06-20-1917"
+  "buildTime": "build 2026-06-20-1942"
 }

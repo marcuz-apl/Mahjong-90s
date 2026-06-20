@@ -1,9 +1,9 @@
 services:
   app:
     build: .
-    container_name: e-mahjong
+    container_name: arcade-mahjong-90s
     ports:
-      - "3000:3000"
+      - "4010:4010"
     volumes:
       - ./data:/app/data
     restart: always

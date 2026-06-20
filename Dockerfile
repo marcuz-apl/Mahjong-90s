@@ -27,7 +27,7 @@ FROM node:24-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=4010
 ENV HOSTNAME="0.0.0.0"
 
 # Copy necessary files from build stage
@@ -39,6 +39,6 @@ COPY --from=builder /app/public ./public
 # Ensure the database data directory exists and has correct permissions
 RUN mkdir -p data
 
-EXPOSE 3000
+EXPOSE 4010
 
 CMD ["npm", "run", "start"]

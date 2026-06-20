@@ -172,6 +172,22 @@ To let users customize the cosmetic theme of the game:
   - `.haidiChanceCardFront` (the back-cover decoration inside the Haidi Chance mini-game)
 - **State & Local Storage**: Selection updates the React state `tileBackColor` and is written directly to browser `localStorage` as `street_mahjong_tile_back` for session-persistent state restoration on mount.
 
+---
+
+## 7. Custom Feature Updates (Localization & Sanyuan Exchange)
+
+### Multi-Language Button Captions (Bilingual Localization)
+- **Bilingual Interface**: All interactive button labels, dashboard options, action panel actions, and dialog buttons have been localized to display both Chinese and English (e.g. `自模 / TSUMO`, `繼續對局 / NEXT`, `退出 / QUIT`, `解鎖控制台 / UNLOCK`, `保存遊戲設置 / SAVE SETTINGS`).
+- **Bilingual Mode Selection**: The game mode toggle badge displays bilingual modes (`模式/Mode: 天開眼/Tenkaigen` and `模式/Mode: 電子基盤/Denshi Kiban`).
+
+### Automated Sanyuan Exchange with 6-Second Timer
+- **Automatic Activation**: The Sanyuan Exchange (三元換牌) triggers automatically at the beginning of the player's turn (if the random rate hits), completely bypassing the action panel button click or manual `Y` key press.
+- **6-Second Countdown**: Displays a `三元牌換牌：6` automatic countdown banner immediately on start. If the countdown reaches 0 before the player swaps 3 cards, the session completes automatically.
+- **Immediate Dismissal**: The swap screen is dismissed immediately upon completion without displaying any subsequent completion feedback messages or delays.
+- **Identical Tile Replacements**: Ensures all 3 swapped tiles receive the *same* randomly selected Sanyuan tile (all 红中, all 发财, or all 白板).
+- **Visible Pool Limit Check**: Evaluates the visible count of Sanyuan tiles on the table (discards + melds). If any Sanyuan tile has 3 or more copies already visible, it is filtered out of the pool.
+
+
 
 
 

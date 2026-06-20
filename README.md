@@ -94,7 +94,7 @@ Make sure you have Node.js (v18+) and npm installed.
    ```
 4. Open your browser and head to:
    ```
-   http://localhost:3000
+   http://localhost:4010
    ```
 5. Click **"投幣開始"** (Insert Coin to Start) to load the assets and start playing!
 
@@ -107,7 +107,7 @@ Alternatively, you can run the game using Docker and Docker Compose (which inclu
    ```bash
    docker compose up -d --build
    ```
-3. Open your browser and navigate to `http://localhost:3000`.
+3. Open your browser and navigate to `http://localhost:4010`.
 4. To stop the application:
    ```bash
    docker compose down
