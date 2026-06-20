@@ -143,6 +143,102 @@ const playHaidiSound = () => {
   oscArp.stop(chordStart + 1.6);
 };
 
+// Web Audio API Retro Arcade Synthesizer for Haidi Tsumo win - Alternative Space Laser Theme
+const playHaidiSound2 = () => {
+  if (typeof window === 'undefined') return;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+  
+  const ctx = new AudioCtx();
+  const time = ctx.currentTime;
+  
+  // 1. Sci-Fi Rising Laser Sweeps (Sine wave pitch ramp up)
+  const playLaser = (startTime, duration, startFreq, endFreq) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(startFreq, startTime);
+    osc.frequency.exponentialRampToValueAtTime(endFreq, startTime + duration);
+    gain.gain.setValueAtTime(0.15, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  };
+  
+  playLaser(time, 0.4, 200, 3000);
+  playLaser(time + 0.15, 0.35, 300, 4000);
+  playLaser(time + 0.3, 0.3, 400, 5000);
+  
+  // 2. Heavy Retro Bass Drop Explosion (Low frequency square wave slide down + noise filter)
+  const oscBass = ctx.createOscillator();
+  const gainBass = ctx.createGain();
+  oscBass.type = 'sawtooth';
+  oscBass.frequency.setValueAtTime(150, time + 0.3);
+  oscBass.frequency.exponentialRampToValueAtTime(40, time + 1.2);
+  gainBass.gain.setValueAtTime(0.25, time + 0.3);
+  gainBass.gain.exponentialRampToValueAtTime(0.001, time + 1.2);
+  oscBass.connect(gainBass);
+  gainBass.connect(ctx.destination);
+  oscBass.start(time + 0.3);
+  oscBass.stop(time + 1.2);
+  
+  // White noise explosion layer
+  const bufferSize = ctx.sampleRate * 1.2;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  
+  const noiseSource = ctx.createBufferSource();
+  noiseSource.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(800, time + 0.3);
+  filter.frequency.exponentialRampToValueAtTime(50, time + 1.2);
+  
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.setValueAtTime(0.2, time + 0.3);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, time + 1.2);
+  
+  noiseSource.connect(filter);
+  filter.connect(noiseGain);
+  noiseGain.connect(ctx.destination);
+  noiseSource.start(time + 0.3);
+  noiseSource.stop(time + 1.2);
+  
+  // 3. Fast Sci-Fi Chiptune Victory Melody (Triangle waves, starting at 0.5s)
+  const playNote = (noteTime, freq, noteDuration) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, noteTime);
+    gain.gain.setValueAtTime(0, noteTime);
+    gain.gain.linearRampToValueAtTime(0.15, noteTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, noteTime + noteDuration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(noteTime);
+    osc.stop(noteTime + noteDuration);
+  };
+  
+  const melodyStart = time + 0.5;
+  // A minor to major transition arpeggio: A4, C5, E5, A5, B5, D#6, F#6, A6, C7
+  const notes = [440.00, 523.25, 659.25, 880.00, 987.77, 1244.51, 1479.98, 1760.00, 2093.00];
+  notes.forEach((freq, index) => {
+    playNote(melodyStart + index * 0.08, freq, 0.15);
+  });
+  
+  // Major Space Chord Finale (C6, E6, G6, C7)
+  const chordStart = melodyStart + notes.length * 0.08;
+  playNote(chordStart, 1046.50, 1.8); // C6
+  playNote(chordStart, 1318.51, 1.8); // E6
+  playNote(chordStart, 1567.98, 1.8); // G6
+  playNote(chordStart, 2093.00, 1.8); // C7
+};
+
 export default function AdminPage() {
   const [mounted, setMounted] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
@@ -173,7 +269,8 @@ export default function AdminPage() {
     ai_randomness_normal: '0.15',
     ai_randomness_hard: '0.0',
     tiankai_peek_type: 'limited',
-    big_hand_rate: '0.0'
+    big_hand_rate: '0.0',
+    haidi_sound_type: 'random'
   });
   
   const [settingsSuccess, setSettingsSuccess] = useState('');
@@ -701,6 +798,28 @@ export default function AdminPage() {
                   </div>
                 </div>
 
+                <div className="settingsSection">
+                  <h3 className="settingsSectionHeading">1.6 海底撈月音效設定</h3>
+                  <div className="settingsGrid">
+                    <div className="settingsField">
+                      <label className="settingsLabel">
+                        海底撈月電子音效
+                        <span className="fieldHelp">選擇海底撈月觸發時播放的 chiptune 電子音效</span>
+                      </label>
+                      <select 
+                        className="settingsInput"
+                        value={settingsForm.haidi_sound_type || 'random'}
+                        onChange={(e) => handleSettingInputChange('haidi_sound_type', e.target.value)}
+                        style={{ height: '40px', background: '#000', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', padding: '0 10px' }}
+                      >
+                        <option value="random">隨機播放 (音效 1 或音效 2 隨機)</option>
+                        <option value="sound1">經典音效 (雷電轟鳴 + 勝利凱歌)</option>
+                        <option value="sound2">太空雷射 (上升雷射 + 宇宙旋律)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
                 {/* AI Difficulty Easy Settings */}
                 <div className="settingsSection">
                   <h3 className="settingsSectionHeading">2. 電腦 AI 難度參數 - 簡單 (EASY)</h3>
@@ -847,14 +966,22 @@ export default function AdminPage() {
               {/* Sound Effect Test Section */}
               <div className="settingsSection" style={{ marginTop: '30px' }}>
                 <h3 className="settingsSectionHeading">5. 遊戲特效與音效測試</h3>
-                <div style={{ padding: '15px 0' }}>
+                <div style={{ padding: '15px 0', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                   <button 
                     type="button" 
                     className="saveSettingsBtn"
-                    style={{ background: 'linear-gradient(180deg, #ff2d75, #b01040)', borderColor: '#ff7da4', boxShadow: '0 0 10px rgba(255,45,117,0.4)', textShadow: '0 0 5px rgba(255,255,255,0.5)' }}
+                    style={{ background: 'linear-gradient(180deg, #ff2d75, #b01040)', borderColor: '#ff7da4', boxShadow: '0 0 10px rgba(255,45,117,0.4)', textShadow: '0 0 5px rgba(255,255,255,0.5)', width: 'auto' }}
                     onClick={playHaidiSound}
                   >
-                    🌌 演示海底撈月效果 (音效)
+                    🌌 演示海底撈月效果 (音效 1)
+                  </button>
+                  <button 
+                    type="button" 
+                    className="saveSettingsBtn"
+                    style={{ background: 'linear-gradient(180deg, #be2edd, #8e44ad)', borderColor: '#e056fd', boxShadow: '0 0 10px rgba(190,46,221,0.4)', textShadow: '0 0 5px rgba(255,255,255,0.5)', width: 'auto' }}
+                    onClick={playHaidiSound2}
+                  >
+                    🌌 演示海底撈月效果 (音效 2)
                   </button>
                 </div>
               </div>

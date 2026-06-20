@@ -55,7 +55,8 @@ try {
     ai_randomness_normal: '0.15',
     ai_randomness_hard: '0.0',
     tiankai_peek_type: 'limited',
-    big_hand_rate: '0.0'
+    big_hand_rate: '0.0',
+    haidi_sound_type: 'random'
   };
   const insertStmt = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)');
   for (const [k, v] of Object.entries(defaultSettings)) {
