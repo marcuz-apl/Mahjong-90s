@@ -250,6 +250,10 @@ export default function GamePage() {
   const [tiankaiPeekActive, setTiankaiPeekActive] = useState(false);
   const tiankaiTimerRef = useRef(null);
   const resolveHaidiChanceRef = useRef(null);
+  const [sanyuanActive, setSanyuanActive] = useState(false);
+  const sanyuanActiveRef = useRef(false);
+  sanyuanActiveRef.current = sanyuanActive;
+  const resolveSanyuanRef = useRef(null);
 
   // SVG Caching
   const [svgCache, setSvgCache] = useState({});
@@ -842,6 +846,30 @@ export default function GamePage() {
     }, 1500);
   };
 
+  const runSanyuanExchange = () => {
+    return new Promise((resolve) => {
+      showMsg('【三元換牌】請選擇手牌中要更換的牌');
+      setSanyuanActive(true);
+      resolveSanyuanRef.current = async (idx) => {
+        const g = gameRef.current;
+        const oldTile = g.hands[0][idx];
+        const sanyuanPool = [31, 32, 33];
+        const newTile = sanyuanPool[Math.floor(Math.random() * sanyuanPool.length)];
+        
+        g.hands[0][idx] = newTile;
+        sortH(0);
+        syncState();
+        
+        showMsg(`三元換牌成功！將 ${tName(oldTile)} 換成了 ${tName(newTile)}`);
+        playDenshiSound('card_flip');
+        
+        await delay(1800);
+        hideMsg();
+        resolve(true);
+      };
+    });
+  };
+
   playerDiscardRef.current = async () => {
     const g = gameRef.current;
     const acts = [];
@@ -859,8 +887,22 @@ export default function GamePage() {
       });
     }
 
+    if (g.gameMode === 'tiankai' && Math.random() < 0.20) {
+      const hasNonDragon = g.hands[0].some(t => t < 31 || t > 33);
+      if (hasNonDragon) {
+        acts.push({
+          type: 'sanyuan',
+          label: '三元換牌',
+          cls: 'abSanyuan',
+          key: 'Y'
+        });
+      }
+    }
+
     if (acts.length > 0) {
-      acts.push({ type: 'pass', label: '跳過', cls: 'abS', key: 'Space' });
+      if (!acts.some(a => a.type === 'pass')) {
+        acts.push({ type: 'pass', label: '跳過', cls: 'abS', key: 'Space' });
+      }
       const ch = await showActsRef.current(acts);
       if (ch.type === 'win') {
         await endGameRef.current(0, g.drawnTile, true);
@@ -875,6 +917,12 @@ export default function GamePage() {
         }
         syncState();
         return await playerDiscardRef.current();
+      }
+      if (ch.type === 'sanyuan') {
+        const swapped = await runSanyuanExchange();
+        if (swapped) {
+          return await playerDiscardRef.current();
+        }
       }
     }
 
@@ -1105,6 +1153,7 @@ export default function GamePage() {
       tiankaiTimerRef.current = null;
     }
     setTiankaiPeekActive(false);
+    setSanyuanActive(false);
 
     if (g.gameMode === 'tiankai') {
       const peekType = settingsRef.current.tiankai_peek_type || 'limited';
@@ -1137,7 +1186,7 @@ export default function GamePage() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       const g = gameRef.current;
-      if (g._waitDisc && g.running) {
+      if ((g._waitDisc || sanyuanActiveRef.current) && g.running) {
         const len = g.hands[0].length;
         if (e.key === 'ArrowLeft') {
           e.preventDefault();
@@ -1149,7 +1198,12 @@ export default function GamePage() {
           syncState();
         } else if (e.key === 'Enter') {
           e.preventDefault();
-          if (resolveDiscRef.current) {
+          if (sanyuanActiveRef.current && resolveSanyuanRef.current) {
+            const resolve = resolveSanyuanRef.current;
+            resolveSanyuanRef.current = null;
+            setSanyuanActive(false);
+            resolve(g.selIdx);
+          } else if (resolveDiscRef.current) {
             const resolve = resolveDiscRef.current;
             resolveDiscRef.current = null;
             resolve(g.selIdx);
@@ -1166,6 +1220,7 @@ export default function GamePage() {
       if (k === 'P') triggerClickAB('abP');
       if (k === 'K') triggerClickAB('abK');
       if (k === 'C') triggerClickAB('abC');
+      if (k === 'Y') triggerClickAB('abY');
       if (e.key === ' ') {
         e.preventDefault();
         triggerClickAB('abS');
@@ -1184,6 +1239,7 @@ export default function GamePage() {
       if (cls === 'abK' && o.key === 'K') return true;
       if (cls === 'abC' && o.key === 'C') return true;
       if (cls === 'abS' && o.key === 'Space') return true;
+      if (cls === 'abY' && o.key === 'Y') return true;
       return false;
     });
 
@@ -1419,6 +1475,13 @@ export default function GamePage() {
     }
     setTiankaiPeekActive(false);
 
+    if (resolveSanyuanRef.current) {
+      const resolve = resolveSanyuanRef.current;
+      resolveSanyuanRef.current = null;
+      resolve(false);
+    }
+    setSanyuanActive(false);
+
     // Resolve pending async promises to terminate loops cleanly
     if (resolveDiscRef.current) {
       const resolve = resolveDiscRef.current;
@@ -1460,6 +1523,14 @@ export default function GamePage() {
 
   const handleTileClick = (idx) => {
     const g = gameRef.current;
+    if (sanyuanActiveRef.current && resolveSanyuanRef.current) {
+      const resolve = resolveSanyuanRef.current;
+      resolveSanyuanRef.current = null;
+      setSanyuanActive(false);
+      resolve(idx);
+      return;
+    }
+
     if (!g._waitDisc || !g.running) return;
     g.selIdx = idx;
     syncState();
@@ -1843,6 +1914,12 @@ export default function GamePage() {
               <div className="keyHintItem"><span className="keyCap">C</span> 吃</div>
               <div className="keyDivider">|</div>
               <div className="keyHintItem"><span className="keyCap">Space</span> 跳過</div>
+              {gameMode === 'tiankai' && (
+                <>
+                  <div className="keyDivider">|</div>
+                  <div className="keyHintItem"><span className="keyCap">Y</span> 三元換牌</div>
+                </>
+              )}
               <div className="keyDivider">|</div>
               <div className="keyHintItem"><span className="keyCap">Q</span> 退出</div>
             </div>
