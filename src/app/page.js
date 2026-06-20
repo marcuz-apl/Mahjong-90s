@@ -1114,6 +1114,16 @@ export default function GamePage() {
           setTiankaiPeekActive(false);
           tiankaiTimerRef.current = null;
         }, 5000); // 5 seconds limited peek time
+      } else if (peekType === 'global') {
+        // Global perspective is turned on at a random time instead of always on
+        const randomDelay = 5000 + Math.random() * 15000; // random delay between 5s and 20s
+        tiankaiTimerRef.current = setTimeout(() => {
+          if (!gameRef.current.running) return;
+          setTiankaiPeekActive(true);
+          showMsg('★ 天開眼開啟！ ★');
+          playDenshiSound('card_flip');
+          setTimeout(() => hideMsg(), 2000);
+        }, randomDelay);
       }
     }
 
@@ -1722,7 +1732,7 @@ export default function GamePage() {
             <span className="pL">對家 <span>({hands[2]?.length || 0})</span></span>
             <div style={{ display: 'flex', gap: '2px' }}>
               {hands[2]?.map((t, i) => (
-                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'limited') === 'global' || isTenpai(hands[0])) ? (
+                gameMode === 'tiankai' && (tiankaiPeekActive || isTenpai(hands[0])) ? (
                   <div 
                     key={i} 
                     className="tile tF szN" 
@@ -1740,7 +1750,7 @@ export default function GamePage() {
             <div id="aLeft">
               <span className="pL">左家 <span>({hands[1]?.length || 0})</span></span>
               {hands[1]?.slice(0, 14).map((t, i) => (
-                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'limited') === 'global' || isTenpai(hands[0])) ? (
+                gameMode === 'tiankai' && (tiankaiPeekActive || isTenpai(hands[0])) ? (
                   <div 
                     key={i} 
                     className="tile tF szN" 
@@ -1772,7 +1782,7 @@ export default function GamePage() {
             <div id="aRight">
               <span className="pL">右家 <span>({hands[3]?.length || 0})</span></span>
               {hands[3]?.slice(0, 14).map((t, i) => (
-                gameMode === 'tiankai' && (tiankaiPeekActive || (settingsRef.current.tiankai_peek_type || 'limited') === 'global' || isTenpai(hands[0])) ? (
+                gameMode === 'tiankai' && (tiankaiPeekActive || isTenpai(hands[0])) ? (
                   <div 
                     key={i} 
                     className="tile tF szN" 

@@ -670,7 +670,7 @@ export default function AdminPage() {
                     <div className="settingsField">
                       <label className="settingsLabel">
                         天開眼透視模式
-                        <span className="fieldHelp">選擇遊戲在天開眼模式下是全程可看對手手牌，還是僅在開局限時展示</span>
+                        <span className="fieldHelp">選擇遊戲在天開眼模式下是隨機時刻開啟對手手牌，還是僅在開局限時展示</span>
                       </label>
                       <select 
                         className="settingsInput"
@@ -678,7 +678,7 @@ export default function AdminPage() {
                         onChange={(e) => handleSettingInputChange('tiankai_peek_type', e.target.value)}
                         style={{ height: '40px', background: '#000', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', padding: '0 10px' }}
                       >
-                        <option value="global">全局透視 (全程展示對手手牌)</option>
+                        <option value="global">全局透視 (對局中隨機時刻開啟)</option>
                         <option value="limited">限時窺屏 (開局前 5 秒限時展示)</option>
                       </select>
                     </div>
